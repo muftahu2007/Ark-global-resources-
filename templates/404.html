@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}404 - Page Not Found | Global Ark Resources{% endblock %}
+
+{% block content %}
+<div class="relative min-h-screen flex items-center justify-center overflow-hidden theme-bg -mt-20 pt-20">
+    <!-- Dynamic Background Mesh -->
+    {% static 'images/carbon-fibre.png' as carbon_bg %}
+    <div class="absolute inset-0 z-0 opacity-20" style="background-image: url('{{ carbon_bg }}'); background-size: 256px; mix-blend-mode: overlay;"></div>
+    
+    <!-- Animated Light Orbs -->
+    <div class="absolute top-1/4 -right-32 w-96 h-96 bg-red-500/10 rounded-full blur-[120px] animate-pulse-slow"></div>
+    <div class="absolute bottom-1/4 -left-32 w-96 h-96 bg-red-500/10 rounded-full blur-[120px] animate-pulse-slow" style="animation-delay: 2s;"></div>
+
+    <div class="absolute inset-0 z-10 bg-gradient-to-b from-transparent via-[var(--bg-primary)]/80 to-[var(--bg-primary)]"></div>
+    
+    <div class="relative z-20 text-center px-6 max-w-4xl mx-auto flex flex-col items-center justify-center mt-[-10vh]">
+        
+        <!-- Glowing Error Badge -->
+        <div class="inline-flex items-center space-x-2 glass px-4 py-2 rounded-full mb-8 animate-fadeInUp">
+            <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+            <span class="text-[9px] text-red-500 font-black tracking-[0.4em] uppercase">System Notice</span>
+        </div>
+
+        <h1 class="brand-font text-8xl md:text-[10rem] font-black tracking-tighter mb-4 leading-[0.8] animate-fadeInUp" style="animation-delay: 100ms;">
+            <span class="text-white drop-shadow-2xl">404</span>
+        </h1>
+        
+        <h2 class="text-2xl md:text-4xl font-bold tracking-widest uppercase text-gold mb-6 animate-fadeInUp" style="animation-delay: 200ms;">
+            Asset Not Found
+        </h2>
+        
+        <p class="theme-text-muted font-light text-sm md:text-lg tracking-[0.2em] uppercase max-w-2xl mx-auto leading-relaxed animate-fadeInUp" style="animation-delay: 300ms;">
+            The portal you are trying to access does not exist or has been restricted. Please return to the secure catalog.
+        </p>
+
+        <!-- Interactive Action Area -->
+        <div class="mt-12 animate-fadeInUp" style="animation-delay: 400ms;">
+            <a href="/" class="relative inline-flex items-center gap-3 overflow-hidden gold-gradient px-12 py-5 rounded-full text-black text-xs font-black uppercase tracking-[0.3em] hover:scale-105 transition-all shadow-[0_0_40px_rgba(212,175,55,0.3)] hover:shadow-[0_0_60px_rgba(212,175,55,0.5)]">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+                Return to Catalog
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
