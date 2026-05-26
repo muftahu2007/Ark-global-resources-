@@ -52,6 +52,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'ark_catalog',
     'ceo_portal',
+    'cloudinary_storage',
+    'cloudinary',
     'whitenoise.runserver_nostatic', # Optional: for testing prod-like static locally
 ]
 
@@ -186,3 +188,9 @@ if not DEBUG:
     SECURE_SSL_REDIRECT = os.getenv('SECURE_SSL_REDIRECT', 'True') == 'True'
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
+
+# Cloudinary Media Storage Configuration
+if not DEBUG:
+    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+    # Cloudinary automatically reads credentials from the CLOUDINARY_URL environment variable.
+    # Format: CLOUDINARY_URL=cloudinary://<api_key>:<api_secret>@<cloud_name>
