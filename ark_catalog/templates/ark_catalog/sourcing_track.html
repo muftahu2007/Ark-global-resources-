@@ -1,0 +1,124 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Track Sourcing Request | Global Ark Resources{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-6 py-32 animate-fadeInUp">
+    <div class="text-center mb-16">
+        <h2 class="text-gold uppercase tracking-[0.6em] text-[10px] font-bold mb-4">Acquisition Portal</h2>
+        <h1 class="brand-font text-5xl md:text-7xl font-bold tracking-tighter italic theme-text">Request <span class="gold-text-gradient">Status</span></h1>
+        <p class="theme-text-muted font-light text-sm md:text-lg tracking-widest uppercase mt-6 max-w-2xl mx-auto">Monitor the acquisition progress of your private asset request.</p>
+    </div>
+
+    {% if not sourcing_request %}
+    <div class="theme-card p-8 md:p-16 shadow-2xl relative overflow-hidden">
+        <div class="absolute inset-0 z-10 bg-gradient-to-tr from-transparent via-white/5 to-transparent"></div>
+        <form method="POST" class="relative z-20 space-y-8 max-w-xl mx-auto">
+            {% csrf_token %}
+            
+            {% if messages %}
+            <div class="space-y-4">
+                {% for message in messages %}
+                <div class="bg-red-500/10 border border-red-500/30 text-red-400 p-4 rounded-xl text-center">
+                    <p class="text-[10px] font-black tracking-widest uppercase">{{ message }}</p>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <div class="space-y-2">
+                <label class="block text-[10px] theme-text font-black uppercase tracking-[0.3em]">Client Email</label>
+                <input type="email" name="email" required placeholder="ceo@company.com" class="w-full bg-[var(--bg-primary)] border border-white/10 focus:border-gold text-white rounded-xl py-4 px-6 outline-none transition-all text-sm font-light">
+            </div>
+            <div class="space-y-2">
+                <label class="block text-[10px] theme-text font-black uppercase tracking-[0.3em]">Tracking Code</label>
+                <input type="text" name="tracking_code" required placeholder="ARK-SRC-XXXXX" class="w-full bg-[var(--bg-primary)] border border-white/10 focus:border-gold text-white rounded-xl py-4 px-6 outline-none transition-all text-sm font-mono uppercase">
+            </div>
+            
+            <button type="submit" class="w-full relative overflow-hidden border border-white/10 py-5 text-[10px] font-black uppercase tracking-[0.4em] transition-all duration-500 bg-[var(--bg-secondary)] hover:bg-gold hover:text-black hover:border-gold hover:shadow-[0_0_30px_rgba(212,175,55,0.4)] active:scale-95 rounded-2xl group/btn mt-8">
+                <span class="relative z-10 flex items-center justify-center gap-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                     Locate Product
+                </span>
+            </button>
+        </form>
+    </div>
+    {% else %}
+    
+    <div class="theme-card p-8 md:p-12 shadow-2xl relative">
+        <div class="flex justify-between items-end border-b border-white/10 pb-8 mb-12">
+            <div>
+                <p class="text-[10px] text-gold font-black tracking-widest uppercase mb-2">Request Profile</p>
+                <h3 class="text-3xl font-brand italic theme-text tracking-tighter">{{ sourcing_request.customer_name }}</h3>
+            </div>
+            <div class="text-right">
+                <p class="text-[10px] text-gray-500 font-black tracking-[0.4em] uppercase mb-2">Identifier</p>
+                <p class="text-xl font-mono text-white tracking-widest select-all">{{ sourcing_request.tracking_code }}</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-12 mb-16">
+            <div class="space-y-6">
+                <div class="glass-panel p-6 bg-white/[0.01]">
+                    <p class="text-[8px] text-gray-500 font-black tracking-widest uppercase mb-3">Target Asset</p>
+                    <p class="text-lg theme-text font-bold tracking-widest uppercase">{{ sourcing_request.asset_class }}</p>
+                </div>
+                <div class="glass-panel p-6 bg-white/[0.01]">
+                    <p class="text-[8px] text-gray-500 font-black tracking-widest uppercase mb-3">Parameters</p>
+                    <div class="flex flex-wrap gap-x-8 gap-y-4">
+                        <div>
+                            <p class="text-[8px] text-gold font-bold tracking-widest uppercase mb-1">Budget</p>
+                            <p class="text-sm text-gray-300 font-mono">{{ sourcing_request.budget }}</p>
+                        </div>
+                        <div>
+                            <p class="text-[8px] text-gold font-bold tracking-widest uppercase mb-1">Timeline</p>
+                            <p class="text-sm text-gray-300 font-mono">{{ sourcing_request.timeline }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass-panel p-8 bg-black/40 border-gold/20 relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-gold/5 rounded-full blur-3xl"></div>
+                <p class="text-[10px] text-gold font-black tracking-[0.3em] uppercase mb-6">Current Status</p>
+                <h2 class="text-4xl font-brand italic text-white tracking-tighter mb-4">{{ sourcing_request.status }}</h2>
+                <p class="text-xs text-gray-400 font-light leading-relaxed">
+                    {% if sourcing_request.status == 'Received' %}
+                        Your request has entered our secure network. A broker will review your parameters shortly.
+                    {% elif sourcing_request.status == 'Researching' %}
+                        Our network of global partners is actively scanning off-market channels for assets matching your profile.
+                    {% elif sourcing_request.status == 'Inspecting' %}
+                        Potential assets have been located. Our team is conducting rigorous verification and quality assurance.
+                    {% elif sourcing_request.status == 'Secured' %}
+                        The asset has been secured. We are coordinating the final legal and logistical protocols.
+                    {% elif sourcing_request.status == 'Acquired' %}
+                        Acquisition complete. The asset is entering our delivery pipeline.
+                    {% elif sourcing_request.status == 'Cancelled' %}
+                        This sourcing request has been closed or archived.
+                    {% endif %}
+                </p>
+                <div class="mt-8 pt-6 border-t border-white/10 flex justify-between items-center">
+                    <span class="text-[8px] text-gray-600 font-black tracking-widest uppercase">Last Updated</span>
+                    <span class="text-[10px] text-gray-400 font-bold tracking-widest">{{ sourcing_request.updated_at|date:"M d, Y" }}</span>
+                </div>
+            </div>
+        </div>
+
+        {% if sourcing_request.broker_notes %}
+        <div class="glass-panel p-8 border-l-4 border-l-gold bg-gold/[0.02]">
+            <p class="text-[10px] text-gold font-black tracking-[0.4em] uppercase mb-4 flex items-center gap-3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                Secure Broker Transmission
+            </p>
+            <p class="text-sm text-gray-300 font-light leading-relaxed italic">{{ sourcing_request.broker_notes }}</p>
+        </div>
+        {% endif %}
+
+        <div class="mt-12 text-center">
+            <a href="{% url 'sourcing_track' %}" class="text-[10px] text-gray-500 hover:text-gold uppercase tracking-widest font-bold transition-colors">Return to Tracker Login</a>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

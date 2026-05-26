@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="relative min-h-screen pt-20 pb-32">
+    <!-- Cinematic Background Glow -->
+    <div class="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
+        <div class="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-ark-gold/10 rounded-full blur-[120px]"></div>
+        <div class="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-ark-gold/5 rounded-full blur-[100px]"></div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-6 md:px-12 lg:px-24">
+
+        <!-- Header -->
+        <div class="text-center mb-24 animate-fadeInUp">
+            <p class="text-[10px] uppercase tracking-[0.5em] text-gold mb-6 font-bold">The Vision</p>
+            <h1 class="text-5xl md:text-7xl font-black italic tracking-tighter brand-font mb-8">GLOBAL ARK<br><span
+                    class="text-gold">RESOURCES</span></h1>
+            <p class="text-lg md:text-xl font-light theme-text-muted max-w-2xl mx-auto leading-relaxed">
+                Elevating the standard of global logistics and elite sourcing. We secure, manage, and deliver the
+                world's most premium assets for an uncompromising clientele.
+            </p>
+        </div>
+
+        <!-- The Visionary (CEO Profile) -->
+        <div class="glass rounded-[2rem] p-8 md:p-16 mb-24 animate-fadeInUp" style="animation-delay: 0.2s;">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+
+                <!-- Portrait -->
+                <div class="lg:col-span-5 relative group">
+                    <div
+                        class="absolute -inset-4 gold-gradient opacity-20 group-hover:opacity-40 blur-2xl rounded-[3rem] transition-all duration-700">
+                    </div>
+                    <div
+                        class="relative aspect-[4/5] rounded-[2.5rem] overflow-hidden border border-white/10 shadow-2xl">
+                        <img src="{% static 'images/ceo_profile.jpg' %}" alt="Collins C.K Nmereole"
+                            class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-1000 ease-out">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+                        <div class="absolute bottom-0 left-0 p-8">
+                            <p class="text-[10px] text-gold uppercase tracking-[0.3em] font-bold mb-2">Founder & CEO</p>
+                            <h2 class="text-3xl font-black text-white tracking-tight brand-font">Collins C.K Nmereole
+                            </h2>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Biography -->
+                <div class="lg:col-span-7 space-y-8">
+                    <h3 class="text-2xl md:text-4xl font-black italic tracking-tighter brand-font text-gold">The
+                        Architect of Exclusivity</h3>
+                    <div class="space-y-6 theme-text-muted font-light leading-relaxed text-lg">
+                        <p>
+                            Collins C.K Nmereole founded Global Ark Resources Ltd. with a singular, uncompromising
+                            vision: to bridge the gap between absolute luxury and global accessibility. Under his
+                            leadership, the firm has evolved into a premier syndicate for high-net-worth sourcing, fleet
+                            management, and exclusive asset acquisition.
+                        </p>
+                        <p>
+                            His approach is deeply rooted in discretion, precision, and an unwavering commitment to
+                            excellence. From orchestrating complex international logistics for exotic automotive fleets
+                            to sourcing rare luxury goods, Collins ensures that every transaction is executed with the
+                            flawless precision of a tailored experience.
+                        </p>
+                        <p>
+                            "True luxury isn't just about the asset; it's about the seamlessness of the acquisition and
+                            the absolute assurance of quality. At Global Ark, we don't just source—we deliver
+                            perfection."
+                        </p>
+                    </div>
+
+                    <div class="pt-8 border-t border-white/10">
+                        <img src="{% static 'images/logo.jpg' %}" alt="Signature"
+                            class="w-16 h-16 rounded-full opacity-50 grayscale hover:grayscale-0 hover:opacity-100 transition-all duration-500">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Core Pillars -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 animate-fadeInUp" style="animation-delay: 0.4s;">
+
+            <div class="glass p-10 rounded-3xl hover:-translate-y-2 transition-transform duration-500 group">
+                <div
+                    class="w-12 h-12 rounded-full border border-gold flex items-center justify-center mb-8 group-hover:bg-gold transition-colors duration-500">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gold group-hover:text-black" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                            d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                    </svg>
+                </div>
+                <h4 class="text-xl font-bold brand-font mb-4">Uncompromising Quality</h4>
+                <p class="text-sm theme-text-muted leading-relaxed">Every asset in our vault, from automotive fleets to
+                    high-end fashion, undergoes rigorous authentication and quality assurance protocols to guarantee
+                    absolute superiority.</p>
+            </div>
+
+            <div class="glass p-10 rounded-3xl hover:-translate-y-2 transition-transform duration-500 group">
+                <div
+                    class="w-12 h-12 rounded-full border border-gold flex items-center justify-center mb-8 group-hover:bg-gold transition-colors duration-500">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gold group-hover:text-black" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                            d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                </div>
+                <h4 class="text-xl font-bold brand-font mb-4">Discreet Sourcing</h4>
+                <p class="text-sm theme-text-muted leading-relaxed">Our private sourcing division operates with complete
+                    confidentiality, leveraging a global network to locate and acquire rare assets specifically
+                    requested by our executive clientele.</p>
+            </div>
+
+            <div class="glass p-10 rounded-3xl hover:-translate-y-2 transition-transform duration-500 group">
+                <div
+                    class="w-12 h-12 rounded-full border border-gold flex items-center justify-center mb-8 group-hover:bg-gold transition-colors duration-500">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gold group-hover:text-black" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                            d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+                <h4 class="text-xl font-bold brand-font mb-4">Global Reach</h4>
+                <p class="text-sm theme-text-muted leading-relaxed">Headquartered in Kano with strategic international
+                    partnerships, we operate across borders to ensure seamless logistics and delivery regardless of
+                    geopolitical constraints.</p>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+{% endblock %}

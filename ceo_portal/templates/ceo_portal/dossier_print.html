@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Executive Dossier - {% if type == 'lead' %}{{ obj.customer_name }}{% else %}{{ obj.tracking_code }}{% endif %}</title>
+    <style>
+        /* Base Reset */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #000; background: #fff; line-height: 1.5; }
+        
+        /* Print Styles */
+        @media print {
+            .no-print { display: none !important; }
+            body { margin: 0; padding: 0; font-size: 11pt; }
+            .page-break { page-break-before: always; }
+            @page { margin: 2cm; size: A4; }
+        }
+
+        /* Screen Styles (for previewing before print) */
+        @media screen {
+            body { background: #f0f0f0; padding: 40px 0; }
+            .dossier-container { background: #fff; max-width: 21cm; min-height: 29.7cm; margin: 0 auto; padding: 2cm; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+            .no-print.controls { text-align: center; margin-bottom: 20px; }
+            .btn-print { background: #000; color: #fff; border: none; padding: 12px 24px; font-size: 14px; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; border-radius: 4px; }
+            .btn-print:hover { background: #333; }
+        }
+
+        /* Layout */
+        .header { border-bottom: 3px solid #000; padding-bottom: 20px; margin-bottom: 40px; text-align: center; }
+        .header h1 { font-size: 24pt; font-weight: 900; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 5px; }
+        .header p { font-size: 9pt; letter-spacing: 2px; color: #666; text-transform: uppercase; }
+
+        .section { margin-bottom: 40px; }
+        .section-title { font-size: 11pt; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; border-bottom: 1px solid #000; padding-bottom: 5px; margin-bottom: 15px; }
+
+        .grid { display: flex; flex-wrap: wrap; margin: -10px; }
+        .col-half { width: 50%; padding: 10px; }
+        .col-full { width: 100%; padding: 10px; }
+
+        .data-label { font-size: 8pt; text-transform: uppercase; letter-spacing: 1px; color: #666; margin-bottom: 2px; }
+        .data-value { font-size: 11pt; font-weight: bold; }
+        .data-value.mono { font-family: monospace; font-size: 12pt; }
+
+        .table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .table th, .table td { border-bottom: 1px solid #eee; padding: 10px 5px; text-align: left; }
+        .table th { font-size: 8pt; text-transform: uppercase; letter-spacing: 1px; color: #666; }
+
+        .footer { margin-top: 60px; border-top: 1px solid #000; padding-top: 10px; text-align: center; font-size: 8pt; color: #999; letter-spacing: 1px; text-transform: uppercase; }
+    </style>
+</head>
+<body>
+
+<div class="no-print controls">
+    <button class="btn-print" onclick="window.print()">Print / Save PDF</button>
+</div>
+
+<div class="dossier-container">
+    <div class="header">
+        <h1>ARK GLOBAL RESOURCES</h1>
+        <p>CONFIDENTIAL EXECUTIVE DOSSIER &bull; DO NOT DISTRIBUTE</p>
+    </div>
+
+    <div class="section text-center" style="text-align: center;">
+        <p style="font-size: 14pt; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 5px;">
+            {% if type == 'lead' %}INQUIRY DOSSIER{% else %}SOURCING REQUEST DOSSIER{% endif %}
+        </p>
+        <p style="font-family: monospace; font-size: 12pt;">
+            REF: {% if type == 'lead' %}ARK-INQ-{{ obj.id|stringformat:"05d" }}{% else %}{{ obj.tracking_code }}{% endif %}
+        </p>
+        <p style="font-size: 9pt; margin-top: 5px; color: #666;">GENERATED: {% now "F j, Y, H:i" %}</p>
+    </div>
+
+    <div class="section">
+        <div class="section-title">Client Profile</div>
+        <div class="grid">
+            <div class="col-half">
+                <div class="data-label">Name / Entity</div>
+                <div class="data-value">{{ obj.customer_name }}</div>
+            </div>
+            <div class="col-half">
+                <div class="data-label">Contact Protocol</div>
+                <div class="data-value mono">{{ obj.phone }}</div>
+            </div>
+            <div class="col-full" style="padding-top: 0;">
+                <div class="data-label">Electronic Mail</div>
+                <div class="data-value">{{ obj.email }}</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">Request Parameters</div>
+        {% if type == 'lead' %}
+            <div class="grid">
+                <div class="col-full">
+                    <div class="data-label">Interest Profile</div>
+                    {% if obj.items_requested.all %}
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Asset ID</th>
+                                    <th>Asset Name</th>
+                                    <th>Category</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in obj.items_requested.all %}
+                                <tr>
+                                    <td class="mono">{{ item.sku }}</td>
+                                    <td><strong>{{ item.name|upper }}</strong></td>
+                                    <td>{{ item.category.name }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    {% else %}
+                        <div class="data-value" style="font-weight: normal; font-style: italic;">General Portfolio Inquiry</div>
+                    {% endif %}
+                </div>
+                {% if obj.message %}
+                <div class="col-full" style="margin-top: 20px;">
+                    <div class="data-label">Transmission Content</div>
+                    <div class="data-value" style="font-weight: normal; white-space: pre-wrap; font-style: italic; border-left: 2px solid #000; padding-left: 15px; margin-top: 5px;">{{ obj.message }}</div>
+                </div>
+                {% endif %}
+            </div>
+        {% else %}
+            <div class="grid">
+                <div class="col-full">
+                    <div class="data-label">Target Asset Class</div>
+                    <div class="data-value" style="font-size: 14pt;">{{ obj.asset_class|upper }}</div>
+                </div>
+                <div class="col-half">
+                    <div class="data-label">Authorized Budget</div>
+                    <div class="data-value mono">{{ obj.budget }}</div>
+                </div>
+                <div class="col-half">
+                    <div class="data-label">Required Timeline</div>
+                    <div class="data-value mono">{{ obj.timeline }}</div>
+                </div>
+                {% if obj.details %}
+                <div class="col-full">
+                    <div class="data-label">Additional Specifications</div>
+                    <div class="data-value" style="font-weight: normal; white-space: pre-wrap; border-left: 2px solid #000; padding-left: 15px; margin-top: 5px;">{{ obj.details }}</div>
+                </div>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="section" style="margin-top: 60px;">
+        <div class="section-title">Status & Action Log</div>
+        <div class="grid">
+            <div class="col-half">
+                <div class="data-label">Current Status</div>
+                <div class="data-value" style="text-transform: uppercase;">{% if type == 'lead' %}Logged & Received{% else %}{{ obj.status }}{% endif %}</div>
+            </div>
+            <div class="col-half">
+                <div class="data-label">Last Modified</div>
+                <div class="data-value">{% if type == 'lead' %}{{ obj.created_at|date:"M d, Y" }}{% else %}{{ obj.updated_at|date:"M d, Y" }}{% endif %}</div>
+            </div>
+            {% if type == 'sourcing' and obj.broker_notes %}
+            <div class="col-full" style="margin-top: 20px;">
+                <div class="data-label">Broker Secure Notes</div>
+                <div class="data-value" style="font-weight: normal; white-space: pre-wrap;">{{ obj.broker_notes }}</div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="footer">
+        PROPERTY OF ARK GLOBAL RESOURCES<br>
+        GENERATED FOR EXECUTIVE REVIEW ONLY
+    </div>
+</div>
+
+<script>
+    // Optional: auto print if query parameter is present
+    if (window.location.search.includes('print=1')) {
+        window.print();
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,86 @@
+{% extends 'ceo_portal/base.html' %}
+
+{% block header %}
+    <h2 class="text-6xl font-black italic tracking-tighter theme-text">Inquiry <span class="text-ark-gold">Intelligence</span></h2>
+{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    {% for lead in leads %}
+        <div class="card group hover:translate-x-3 transition-all duration-700">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
+                <!-- Client Core -->
+                <div class="flex-grow">
+                    <div class="flex items-center gap-4 mb-3">
+                        <div class="w-10 h-10 rounded-full border border-ark-border flex items-center justify-center text-[10px] font-black text-ark-gold group-hover:bg-ark-gold group-hover:text-black transition-all">
+                            {{ lead.customer_name|first }}
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-black italic theme-text uppercase tracking-tighter">{{ lead.customer_name }}</h3>
+                            <p class="text-[9px] text-ark-gold font-black tracking-[0.3em] uppercase opacity-60">Verified Lead</p>
+                        </div>
+                    </div>
+                    <div class="flex flex-wrap gap-6 mt-6">
+                        <div class="space-y-1">
+                            <p class="text-[8px] text-gray-600 font-black tracking-widest uppercase">Contact Protocol</p>
+                            <p class="text-xs text-gray-300 font-bold tracking-widest">{{ lead.phone }}</p>
+                        </div>
+                        <div class="space-y-1">
+                            <p class="text-[8px] text-gray-600 font-black tracking-widest uppercase">Electronic Mail</p>
+                            <p class="text-xs text-gray-300 font-bold tracking-widest">{{ lead.email }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product Interest -->
+                <div class="w-full md:w-64 glass-panel p-4 bg-white/[0.01]">
+                    <p class="text-[8px] text-gray-600 font-black tracking-widest uppercase mb-3">Interest Profile</p>
+                    <div class="space-y-2">
+                        {% for product in lead.items_requested.all %}
+                            <div class="flex items-center gap-2">
+                                <div class="w-1 h-1 bg-ark-gold rounded-full"></div>
+                                <p class="text-[10px] theme-text font-bold tracking-widest uppercase truncate">{{ product.name }}</p>
+                            </div>
+                        {% empty %}
+                            <p class="text-[10px] text-gray-500 italic">General Portfolio Inquiry</p>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Comms Control -->
+                <div class="flex flex-col gap-4">
+                    <div class="flex gap-4">
+                        <a href="https://wa.me/{{ lead.phone }}" target="_blank" class="btn-gold !px-6 flex items-center justify-center">
+                            WhatsApp
+                        </a>
+                        <a href="mailto:{{ lead.email }}" class="w-12 h-12 rounded-full border border-ark-border flex items-center justify-center hover:bg-white hover:text-black transition-all">
+                            ✉
+                        </a>
+                    </div>
+                    <a href="{% url 'ceo_lead_dossier_print' lead.id %}" target="_blank" class="w-full text-center px-4 py-2 border border-white/10 rounded-xl text-[8px] font-black uppercase tracking-[0.2em] text-gray-400 hover:text-white hover:border-white/30 transition-all flex items-center justify-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
+                        PDF Dossier
+                    </a>
+                </div>
+            </div>
+            
+            {% if lead.message %}
+                <div class="mt-8 pt-8 border-t border-ark-border">
+                    <p class="text-[8px] text-gray-600 font-black tracking-widest uppercase mb-4">Transmission Content</p>
+                    <p class="text-xs text-gray-400 font-medium leading-relaxed italic border-l-2 border-ark-gold/30 pl-6">{{ lead.message }}</p>
+                </div>
+            {% endif %}
+            
+            <div class="mt-8 flex justify-between items-center text-[8px] font-black tracking-widest text-gray-700 uppercase">
+                <span>Ref ID: ARK-{{ lead.id }}</span>
+                <span>Logged: {{ lead.created_at|date:"M d, Y | H:i" }}</span>
+            </div>
+        </div>
+    {% empty %}
+        <div class="py-32 text-center glass-panel">
+            <h3 class="text-2xl font-brand italic text-gray-600">The intelligence feed is currently silent.</h3>
+            <p class="text-[10px] text-gray-700 tracking-[0.3em] uppercase mt-4">Waiting for incoming transmissions</p>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

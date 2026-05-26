@@ -1,0 +1,308 @@
+{% extends 'ceo_portal/base.html' %}
+
+{% block header %}
+<h2 class="text-6xl font-black italic tracking-tighter theme-text">The <span class="text-ark-gold">Vault</span></h2>
+<p class="text-sm theme-text-muted mt-2 max-w-xl font-light">
+    Deploy, detail, and audit physical luxury assets secured inside database matrices.
+</p>
+{% endblock %}
+
+{% block content %}
+<!-- Universal Vault Search Bar -->
+<div class="glass-panel p-6 mb-12">
+    <form method="GET"
+        action="{% if current_category %}{% url 'ceo_inventory_category' current_category.slug %}{% else %}{% url 'ceo_inventory' %}{% endif %}"
+        class="flex gap-4 items-center">
+        <div class="relative flex-grow">
+            <input type="text" name="q" value="{{ search_query }}"
+                placeholder="Search assets by SKU, Designation, or Details..."
+                class="w-full bg-white/[0.02] border border-white/5 focus:border-ark-gold/30 text-white rounded-2xl py-3.5 px-5 text-xs outline-none transition-all placeholder:text-gray-600">
+            {% if search_query %}
+            <a href="{% if current_category %}{% url 'ceo_inventory_category' current_category.slug %}{% else %}{% url 'ceo_inventory' %}{% endif %}"
+                class="absolute right-12 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white text-[10px] font-black uppercase tracking-widest mr-2">Clear</a>
+            {% endif %}
+            <button type="submit"
+                class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+            </button>
+        </div>
+    </form>
+</div>
+
+{% if not current_category and not search_query %}
+<!-- Category Selection Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+    {% for cat in categories %}
+    <a href="{% url 'ceo_inventory_category' cat.slug %}"
+        class="group relative overflow-hidden rounded-3xl aspect-[16/9] card !p-0 border-ark-border hover:border-ark-gold/40 hover:scale-[1.03] hover:shadow-[0_20px_50px_rgba(197,160,89,0.15)] transition-all duration-700">
+        <div class="absolute inset-0 bg-gradient-to-r from-ark-deep to-transparent z-10"></div>
+        <!-- Category Label -->
+        <div class="absolute inset-0 flex flex-col justify-center p-12 z-20">
+            <p class="text-[10px] text-ark-gold font-black tracking-[0.4em] uppercase mb-2 opacity-60">Directory</p>
+            <h3
+                class="text-5xl font-black italic theme-text group-hover:translate-x-4 transition-transform duration-700">
+                {{ cat.name }}</h3>
+            <div class="w-12 h-[1px] bg-ark-gold mt-6 group-hover:w-24 transition-all duration-700"></div>
+        </div>
+        <!-- Visual Indicator -->
+        <div class="absolute top-0 right-0 p-12 text-ark-gold/10 group-hover:text-ark-gold/20 transition-colors">
+            <span class="text-9xl font-brand italic opacity-20">{{ cat.name|first }}</span>
+        </div>
+    </a>
+    {% endfor %}
+</div>
+{% else %}
+<!-- Category or Search Results specific inventory -->
+<div class="space-y-12">
+    <div class="flex items-center justify-between">
+        <div class="flex items-center gap-6">
+            <a href="{% url 'ceo_inventory' %}"
+                class="w-12 h-12 rounded-full border border-ark-border flex items-center justify-center hover:bg-ark-gold hover:text-black transition-all">←</a>
+            <div>
+                {% if current_category %}
+                <p class="text-[10px] text-ark-gold font-black tracking-[0.4em] uppercase">Browsing Collection</p>
+                <h3 class="text-4xl font-black italic theme-text">{{ current_category.name }}</h3>
+                {% else %}
+                <p class="text-[10px] text-ark-gold font-black tracking-[0.4em] uppercase">Universal Vault Search</p>
+                <h3 class="text-4xl font-black italic theme-text">Results matching "{{ search_query }}"</h3>
+                {% endif %}
+            </div>
+        </div>
+        {% if products and current_category %}
+        <div>
+            <button onclick="toggleSelectMode()" id="selectModeBtn"
+                class="px-6 py-3 text-[9px] font-black tracking-widest uppercase border border-ark-gold text-ark-gold rounded-full hover:bg-ark-gold hover:text-black transition-all shadow-[0_0_15px_rgba(197,160,89,0.2)]">Enable
+                Mass Purge</button>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Hidden Bulk Delete Form -->
+    {% if current_category %}
+    <form id="bulkDeleteForm" action="{% url 'ceo_bulk_delete_assets' %}" method="POST" class="hidden">
+        {% csrf_token %}
+        <input type="hidden" name="category_slug" value="{{ current_category.slug }}">
+    </form>
+    {% endif %}
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+        {% for product in products %}
+        <div class="card !p-0 overflow-hidden group">
+            <div class="relative aspect-square overflow-hidden cursor-pointer" onclick="handleCardClick(event, this)">
+                <!-- Checkbox for Mass Purge -->
+                <div class="absolute top-4 left-4 z-30 select-checkbox hidden">
+                    <input type="checkbox" value="{{ product.pk }}"
+                        class="w-6 h-6 rounded bg-ark-black border-2 border-ark-gold text-ark-gold focus:ring-ark-gold cursor-pointer pointer-events-none">
+                </div>
+
+                {% if product.image %}
+                <img src="{{ product.image.url }}"
+                    class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000">
+                {% endif %}
+
+                <!-- AJAX Interactive Availability Toggle -->
+                <div class="absolute top-4 right-4 z-20 flex gap-2">
+                    <button type="button" data-product-id="{{ product.pk }}" onclick="toggleAvailability(event, this)"
+                        class="px-4 py-2 rounded-full text-[9px] font-black tracking-widest uppercase transition-all duration-300 {% if product.is_available %}bg-green-500 text-black shadow-[0_0_15px_rgba(34,197,94,0.4)]{% else %}bg-red-500 theme-text{% endif %}">
+                        {% if product.is_available %}Public{% else %}Archived{% endif %}
+                    </button>
+                </div>
+            </div>
+            <div class="p-6">
+                <div class="flex justify-between items-start mb-4">
+                    <div>
+                        <h4 class="text-sm font-bold theme-text tracking-widest uppercase truncate w-40"
+                            title="{{ product.name }}">{{ product.name }}</h4>
+                        <p class="text-[8px] text-ark-gold font-bold tracking-[0.2em] uppercase mt-1">{{
+                            product.category.name }}</p>
+                    </div>
+                </div>
+                <div class="flex gap-2">
+                    <a href="{% url 'ceo_edit_asset' product.pk %}"
+                        class="flex-grow py-3 border border-ark-border rounded-lg text-[9px] font-black tracking-widest uppercase text-center text-gray-500 hover:theme-text hover:border-white transition-all">Edit
+                        Details</a>
+                    <a href="{% url 'ceo_delete_asset' product.pk %}"
+                        onclick="return confirm('Are you sure you want to remove this asset?')"
+                        class="w-12 h-10 border border-ark-border rounded-lg flex items-center justify-center text-red-500/40 hover:text-red-500 hover:border-red-500/40 transition-all">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-span-full py-32 text-center glass-panel">
+            <p class="text-gray-600 font-brand italic text-xl">No assets match your search parameters or directory
+                selection.</p>
+            <div class="mt-8">
+                <a href="{% url 'ceo_add_asset' %}" class="btn-gold inline-block mb-4">Deploy Single Asset</a>
+                <br>
+                <a href="{% url 'ceo_bulk_add_assets' %}"
+                    class="text-[9px] font-black tracking-widest uppercase text-ark-gold opacity-60 hover:opacity-100 transition-opacity">Mass
+                    Deploy (Bulk)</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<!-- Bottom Action Bar for Mass Purge -->
+{% if current_category %}
+<div id="bulkActionBar"
+    class="fixed bottom-0 left-0 w-full bg-ark-black border-t border-red-900/50 p-6 z-[100] transform translate-y-full transition-transform duration-500 flex justify-between items-center px-6 md:px-24">
+    <div>
+        <p class="text-[10px] text-red-500 font-black tracking-[0.4em] uppercase mb-1 animate-pulse">Mass Purge Active
+        </p>
+        <p class="text-xl font-bold theme-text"><span id="selectedCount">0</span> Assets Selected</p>
+    </div>
+    <div class="flex items-center gap-8">
+        <button onclick="selectAll()"
+            class="text-[10px] font-black tracking-widest text-ark-gold hover:text-white uppercase transition-all">Delete
+            All</button>
+        <button onclick="executeBulkDelete()"
+            class="px-8 py-4 bg-red-600 hover:bg-red-700 text-white text-[10px] font-black tracking-widest uppercase rounded-lg shadow-[0_0_20px_rgba(220,38,38,0.4)] transition-all">Purge
+            Selected</button>
+    </div>
+</div>
+{% endif %}
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    let isSelectMode = false;
+
+    // AJAX Availability Toggle Switch
+    function toggleAvailability(event, button) {
+        const productId = button.dataset.productId;
+        event.stopPropagation(); // Stop trigger card selection action
+        button.disabled = true;
+        button.style.opacity = '0.5';
+
+        const url = `/ceo-portal/inventory/toggle/${productId}/`;
+
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                button.disabled = false;
+                button.style.opacity = '1';
+
+                if (data.status === 'success') {
+                    if (data.is_available) {
+                        button.innerText = "Public";
+                        button.className = "px-4 py-2 rounded-full text-[9px] font-black tracking-widest uppercase transition-all duration-300 bg-green-500 text-black shadow-[0_0_15px_rgba(34,197,94,0.4)]";
+                    } else {
+                        button.innerText = "Archived";
+                        button.className = "px-4 py-2 rounded-full text-[9px] font-black tracking-widest uppercase transition-all duration-300 bg-red-500 theme-text";
+                    }
+                } else {
+                    alert("Security policy: Unable to refine asset status.");
+                }
+            })
+            .catch(err => {
+                button.disabled = false;
+                button.style.opacity = '1';
+                console.error("AJAX Override failed:", err);
+            });
+    }
+
+    function toggleSelectMode() {
+        isSelectMode = !isSelectMode;
+        const checkboxes = document.querySelectorAll('.select-checkbox');
+        const btn = document.getElementById('selectModeBtn');
+        const actionBar = document.getElementById('bulkActionBar');
+
+        if (isSelectMode) {
+            checkboxes.forEach(cb => cb.classList.remove('hidden'));
+            btn.innerText = "Cancel Mass Purge";
+            btn.classList.add('bg-ark-gold', 'text-black');
+            if (actionBar) actionBar.classList.remove('translate-y-full');
+        } else {
+            checkboxes.forEach(cb => {
+                cb.classList.add('hidden');
+                cb.querySelector('input').checked = false;
+            });
+            btn.innerText = "Enable Mass Purge";
+            btn.classList.remove('bg-ark-gold', 'text-black');
+            if (actionBar) {
+                actionBar.classList.add('translate-y-full');
+                updateSelectionCount();
+            }
+        }
+    }
+
+    function handleCardClick(event, element) {
+        if (!isSelectMode) return;
+        if (event.target.closest('button') || event.target.closest('a')) return;
+
+        const checkbox = element.querySelector('.select-checkbox input');
+        checkbox.checked = !checkbox.checked;
+
+        const img = element.querySelector('img');
+        if (checkbox.checked) {
+            img.classList.add('opacity-40', 'grayscale');
+        } else {
+            img.classList.remove('opacity-40', 'grayscale');
+        }
+
+        updateSelectionCount();
+    }
+
+    function updateSelectionCount() {
+        const selected = document.querySelectorAll('.select-checkbox input:checked').length;
+        const counter = document.getElementById('selectedCount');
+        if (counter) counter.innerText = selected;
+    }
+
+    function selectAll() {
+        const checkboxes = document.querySelectorAll('.select-checkbox input');
+        const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+
+        checkboxes.forEach(cb => {
+            cb.checked = !allChecked;
+            const img = cb.closest('.aspect-square').querySelector('img');
+            if (!allChecked) {
+                img.classList.add('opacity-40', 'grayscale');
+            } else {
+                img.classList.remove('opacity-40', 'grayscale');
+            }
+        });
+        updateSelectionCount();
+    }
+
+    function executeBulkDelete() {
+        const selected = document.querySelectorAll('.select-checkbox input:checked');
+        if (selected.length === 0) {
+            alert('Please select at least one asset to purge.');
+            return;
+        }
+
+        if (confirm(`CRITICAL WARNING: Are you absolutely sure you want to permanently delete ${selected.length} assets? This action cannot be reversed.`)) {
+            const form = document.getElementById('bulkDeleteForm');
+            if (form) {
+                selected.forEach(cb => {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'selected_assets';
+                    input.value = cb.value;
+                    form.appendChild(input);
+                });
+                form.submit();
+            }
+        }
+    }
+</script>
+{% endblock %}

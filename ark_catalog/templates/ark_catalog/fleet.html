@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Fleet Management | Global Ark Resources{% endblock %}
+
+{% block content %}
+<div class="theme-bg-secondary py-24 px-6">
+    <div class="max-w-6xl mx-auto flex justify-between items-end">
+        <div>
+            <h2 class="text-gold uppercase tracking-[0.6em] text-[10px] font-bold mb-4">02. Elite Service</h2>
+            <h1 class="brand-font text-7xl font-bold tracking-tighter italic theme-text">FLEET <span class="gold-text-gradient">MANAGEMENT</span></h1>
+            <p class="theme-text-muted font-light text-sm md:text-lg tracking-widest uppercase max-w-2xl mt-6 leading-relaxed">
+                Comprehensive acquisition, maintenance, and logistical oversight for ultra-luxury automotive and maritime fleets. We handle the complexities; you enjoy the drive.
+            </p>
+        </div>
+        <a href="{% url 'catalog' %}" class="text-[10px] uppercase tracking-widest theme-text-muted hover:text-white transition-colors pb-2 border-b border-white/10">Return to Portals</a>
+    </div>
+</div>
+
+<div class="max-w-7xl mx-auto px-6 py-24 theme-bg">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-24">
+        {% for product in fleet_cars %}
+        <div class="group relative animate-fadeInUp transition-all duration-500 hover:-translate-y-6 hover:z-50 active:scale-[0.98] cursor-pointer">
+            <div class="relative aspect-[16/10] overflow-hidden rounded-3xl theme-card shadow-2xl group-hover:shadow-[0_40px_80px_rgba(212,175,55,0.2)] transition-all duration-700">
+                
+                <!-- Dynamic Lighting/Glare overlay -->
+                <div class="absolute inset-0 z-20 opacity-0 group-hover:opacity-100 bg-gradient-to-tr from-transparent via-white/20 to-transparent transition-opacity duration-500 pointer-events-none transform -translate-x-[150%] group-hover:translate-x-[150%] transition-transform ease-out duration-1000"></div>
+
+                {% if product.image %}
+                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-full object-cover grayscale-[40%] group-hover:grayscale-0 transition-transform duration-1000 scale-100 group-hover:scale-110">
+                {% endif %}
+                
+                {% if not product.is_available %}
+                <div class="absolute inset-0 z-30 bg-[var(--bg-primary)]/80 backdrop-blur-md flex flex-col items-center justify-center transition-all duration-500">
+                    <h4 class="brand-font italic text-5xl text-gold mb-2 group-hover:scale-110 transition-transform duration-500">Deployed</h4>
+                </div>
+                {% endif %}
+                
+                <!-- Deep Base Gradient -->
+                <div class="absolute inset-0 z-10 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+            </div>
+
+            <div class="mt-8 transition-all duration-500 transform group-hover:-translate-y-2 relative z-30 px-2">
+                <div class="flex justify-between items-baseline mb-4">
+                    <h3 class="text-4xl font-bold tracking-tighter brand-font italic group-hover:text-gold transition-colors duration-300 theme-text">{{ product.name|upper }}</h3>
+                </div>
+                <p class="theme-text-muted font-light leading-relaxed text-sm max-w-lg mb-8 opacity-70 group-hover:opacity-100 transition-opacity duration-500">
+                    {{ product.description }}
+                </p>
+                
+                <form action="{% url 'toggle_selection' product.id %}" method="POST" class="toggle-selection-form">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="add">
+                    <button type="submit" class="relative w-full overflow-hidden border border-white/10 py-5 text-[10px] font-black uppercase tracking-[0.4em] transition-all duration-500 bg-[var(--bg-secondary)] hover:bg-gold hover:text-black hover:border-gold hover:shadow-[0_0_30px_rgba(212,175,55,0.4)] active:scale-95 rounded-2xl group/btn">
+                        <span class="relative z-10 flex items-center justify-center gap-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
+                            Add To Selection
+                        </span>
+                    </button>
+                </form>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-span-full py-48 text-center theme-card">
+            <p class="text-4xl font-light theme-text-muted tracking-tighter italic">Our fleet is currently deployed. Please check back later.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,249 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Private Sourcing | Global Ark Resources{% endblock %}
+
+{% block content %}
+<div class="theme-bg-secondary py-24 px-6 relative overflow-hidden">
+    <!-- Subtle Background Accents -->
+    <div class="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-ark-gold/5 to-transparent pointer-events-none"></div>
+
+    <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-end gap-12 relative z-10">
+        <div class="max-w-2xl">
+            <h2 class="text-gold uppercase tracking-[0.6em] text-[10px] font-bold mb-4">03. Exclusive Access</h2>
+            <h1 class="brand-font text-6xl md:text-7xl font-bold tracking-tighter italic theme-text">PRIVATE <span class="gold-text-gradient">SOURCING</span></h1>
+            <p class="theme-text-muted font-light text-sm md:text-lg tracking-widest uppercase mt-6 leading-relaxed">
+                Unable to find a specific rare asset? Commission our global network of elite brokers to locate and acquire off-market masterpieces on your behalf.
+            </p>
+        </div>
+        <a href="{% url 'catalog' %}" class="text-[10px] uppercase tracking-widest theme-text-muted hover:text-white transition-colors pb-2 border-b border-white/10 whitespace-nowrap">Return to Portals</a>
+    </div>
+</div>
+
+<div class="max-w-4xl mx-auto px-6 py-24 relative z-20">
+    <div class="theme-card p-8 md:p-16 rounded-3xl shadow-[0_0_50px_rgba(0,0,0,0.5)] relative overflow-hidden border border-white/5 backdrop-blur-xl">
+        <!-- Step Indicators -->
+        <div class="flex justify-between items-center mb-16 relative">
+            <div class="absolute top-1/2 left-0 w-full h-[1px] bg-white/10 -translate-y-1/2 z-0"></div>
+            <div class="absolute top-1/2 left-0 h-[1px] bg-ark-gold -translate-y-1/2 z-0 transition-all duration-500" id="progress-bar" style="width: 0%;"></div>
+            
+            <div class="step-indicator active w-8 h-8 rounded-full bg-ark-gold text-black flex items-center justify-center font-bold text-xs relative z-10 shadow-[0_0_15px_rgba(212,175,55,0.4)] transition-all duration-300" id="ind-1">1</div>
+            <div class="step-indicator w-8 h-8 rounded-full bg-ark-black border border-white/20 text-white flex items-center justify-center font-bold text-xs relative z-10 transition-all duration-300" id="ind-2">2</div>
+            <div class="step-indicator w-8 h-8 rounded-full bg-ark-black border border-white/20 text-white flex items-center justify-center font-bold text-xs relative z-10 transition-all duration-300" id="ind-3">3</div>
+        </div>
+
+        <form action="{% url 'private_sourcing' %}" method="POST" id="sourcingForm">
+            {% csrf_token %}
+            
+            <!-- STEP 1: Client Profile -->
+            <div class="step-content block animate-fadeInUp" id="step-1">
+                <h3 class="brand-font italic text-3xl theme-text mb-2">Client Profile</h3>
+                <p class="text-[10px] uppercase tracking-widest theme-text-muted mb-8">Confidential Contact Information</p>
+                
+                <div class="space-y-6">
+                    <div>
+                        <label class="block text-[10px] font-black uppercase tracking-[0.2em] text-ark-gold mb-2 ml-4">Full Legal Name</label>
+                        <input type="text" name="name" required class="w-full bg-black/40 border border-white/10 focus:border-ark-gold text-white rounded-2xl py-4 px-6 text-sm outline-none transition-colors backdrop-blur-sm placeholder:text-gray-600" placeholder="e.g. Alexander Sterling">
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-[10px] font-black uppercase tracking-[0.2em] text-ark-gold mb-2 ml-4">Email Address</label>
+                            <input type="email" name="email" required class="w-full bg-black/40 border border-white/10 focus:border-ark-gold text-white rounded-2xl py-4 px-6 text-sm outline-none transition-colors backdrop-blur-sm placeholder:text-gray-600" placeholder="alexander@domain.com">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black uppercase tracking-[0.2em] text-ark-gold mb-2 ml-4">Phone / WhatsApp</label>
+                            <input type="tel" name="phone" required class="w-full bg-black/40 border border-white/10 focus:border-ark-gold text-white rounded-2xl py-4 px-6 text-sm outline-none transition-colors backdrop-blur-sm placeholder:text-gray-600" placeholder="+1 (555) 000-0000">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-12 flex justify-end">
+                    <button type="button" onclick="nextStep(2)" class="gold-gradient text-black px-12 py-4 rounded-full text-[10px] font-black uppercase tracking-[0.4em] hover:scale-105 transition-all shadow-[0_0_20px_rgba(212,175,55,0.3)]">Proceed →</button>
+                </div>
+            </div>
+
+            <!-- STEP 2: Sourcing Requirements -->
+            <div class="step-content hidden animate-fadeInUp" id="step-2">
+                <h3 class="brand-font italic text-3xl theme-text mb-2">Acquisition Target</h3>
+                <p class="text-[10px] uppercase tracking-widest theme-text-muted mb-8">Define the asset parameters</p>
+                
+                <div class="space-y-6">
+                    <div>
+                        <label class="block text-[10px] font-black uppercase tracking-[0.2em] text-ark-gold mb-2 ml-4">Asset Class</label>
+                        <select name="asset_type" required class="w-full bg-black/40 border border-white/10 focus:border-ark-gold text-white rounded-2xl py-4 px-6 text-sm outline-none transition-colors backdrop-blur-sm appearance-none">
+                            <option value="" disabled selected>Select Category</option>
+                            {% for category in categories %}
+                            <option value="{{ category.name }}">{{ category.name }}</option>
+                            {% endfor %}
+                            <option value="Other">Bespoke/Other</option>
+                        </select>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-[10px] font-black uppercase tracking-[0.2em] text-ark-gold mb-2 ml-4">Allocated Budget</label>
+                            <select name="budget" required class="w-full bg-black/40 border border-white/10 focus:border-ark-gold text-white rounded-2xl py-4 px-6 text-sm outline-none transition-colors backdrop-blur-sm appearance-none">
+                                <option value="" disabled selected>Select Range</option>
+                                <option value="Under $100k">Under $100,000</option>
+                                <option value="$100k - $500k">$100,000 - $500,000</option>
+                                <option value="$500k - $1M">$500,000 - $1,000,000</option>
+                                <option value="$1M+">$1,000,000+</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black uppercase tracking-[0.2em] text-ark-gold mb-2 ml-4">Target Timeline</label>
+                            <select name="timeline" required class="w-full bg-black/40 border border-white/10 focus:border-ark-gold text-white rounded-2xl py-4 px-6 text-sm outline-none transition-colors backdrop-blur-sm appearance-none">
+                                <option value="" disabled selected>Select Urgency</option>
+                                <option value="Immediate (ASAP)">Immediate (ASAP)</option>
+                                <option value="1-3 Months">1 - 3 Months</option>
+                                <option value="3-6 Months">3 - 6 Months</option>
+                                <option value="Flexible">Flexible / Opportunistic</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-12 flex justify-between">
+                    <button type="button" onclick="prevStep(1)" class="text-white/50 hover:text-white px-8 py-4 text-[10px] font-black uppercase tracking-[0.2em] transition-colors">← Back</button>
+                    <button type="button" onclick="nextStep(3)" class="gold-gradient text-black px-12 py-4 rounded-full text-[10px] font-black uppercase tracking-[0.4em] hover:scale-105 transition-all shadow-[0_0_20px_rgba(212,175,55,0.3)]">Proceed →</button>
+                </div>
+            </div>
+
+            <!-- STEP 3: Final Details -->
+            <div class="step-content hidden animate-fadeInUp" id="step-3">
+                <h3 class="brand-font italic text-3xl theme-text mb-2">Specifications & Protocol</h3>
+                <p class="text-[10px] uppercase tracking-widest theme-text-muted mb-8">Finalize the commission</p>
+                
+                <div class="space-y-6">
+                    <div>
+                        <label class="block text-[10px] font-black uppercase tracking-[0.2em] text-ark-gold mb-2 ml-4">Detailed Specifications</label>
+                        <textarea name="details" rows="5" class="w-full bg-black/40 border border-white/10 focus:border-ark-gold text-white rounded-2xl py-4 px-6 text-sm outline-none transition-colors backdrop-blur-sm placeholder:text-gray-600 resize-none" placeholder="Please provide specific models, years, conditions, provenances, or any exacting requirements..."></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-[10px] font-black uppercase tracking-[0.2em] text-ark-gold mb-4 ml-4">Preferred Communication Protocol</label>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <label class="relative cursor-pointer">
+                                <input type="radio" name="method" value="whatsapp" class="peer sr-only" checked>
+                                <div class="p-6 rounded-2xl border border-white/10 bg-black/20 peer-checked:border-ark-gold peer-checked:bg-ark-gold/5 transition-all duration-300">
+                                    <div class="flex items-center gap-4">
+                                        <div class="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center text-green-500">
+                                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86s.274.072.376-.043c.101-.116.433-.506.549-.68.116-.173.231-.145.39-.087s1.011.477 1.184.564c.173.087.289.129.332.202.043.073.043.423-.101.827z"/></svg>
+                                        </div>
+                                        <div>
+                                            <h4 class="text-white font-bold text-sm">Encrypted WhatsApp</h4>
+                                            <p class="text-[10px] text-gray-400 mt-1">Instant, secure transmission.</p>
+                                        </div>
+                                    </div>
+                                    <div class="absolute top-4 right-4 w-4 h-4 rounded-full border border-gray-600 peer-checked:border-ark-gold peer-checked:bg-ark-gold flex items-center justify-center transition-colors">
+                                        <div class="w-2 h-2 rounded-full bg-black opacity-0 peer-checked:opacity-100"></div>
+                                    </div>
+                                </div>
+                            </label>
+
+                            <label class="relative cursor-pointer">
+                                <input type="radio" name="method" value="email" class="peer sr-only">
+                                <div class="p-6 rounded-2xl border border-white/10 bg-black/20 peer-checked:border-ark-gold peer-checked:bg-ark-gold/5 transition-all duration-300">
+                                    <div class="flex items-center gap-4">
+                                        <div class="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-500">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                                        </div>
+                                        <div>
+                                            <h4 class="text-white font-bold text-sm">Secure Email</h4>
+                                            <p class="text-[10px] text-gray-400 mt-1">Formal dossier format.</p>
+                                        </div>
+                                    </div>
+                                    <div class="absolute top-4 right-4 w-4 h-4 rounded-full border border-gray-600 peer-checked:border-ark-gold peer-checked:bg-ark-gold flex items-center justify-center transition-colors">
+                                        <div class="w-2 h-2 rounded-full bg-black opacity-0 peer-checked:opacity-100"></div>
+                                    </div>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-12 flex justify-between">
+                    <button type="button" onclick="prevStep(2)" class="text-white/50 hover:text-white px-8 py-4 text-[10px] font-black uppercase tracking-[0.2em] transition-colors">← Back</button>
+                    <button type="submit" id="submitBtn" class="gold-gradient text-black px-12 py-4 rounded-full text-[10px] font-black uppercase tracking-[0.4em] hover:scale-105 transition-all shadow-[0_0_30px_rgba(212,175,55,0.4)] relative overflow-hidden group">
+                        <span id="btnText" class="relative z-10 flex items-center gap-2">
+                            Deploy Request
+                            <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                        </span>
+                        <span id="btnLoading" class="hidden relative z-10 flex items-center gap-2">
+                            <div class="w-3 h-3 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
+                            TRANSMITTING...
+                        </span>
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function nextStep(step) {
+        // Simple Validation before proceeding
+        if(step === 2) {
+            const name = document.querySelector('input[name="name"]').value;
+            const email = document.querySelector('input[name="email"]').value;
+            const phone = document.querySelector('input[name="phone"]').value;
+            if(!name || !email || !phone) {
+                alert('Please complete your profile to proceed.');
+                return;
+            }
+        } else if(step === 3) {
+            const asset = document.querySelector('select[name="asset_type"]').value;
+            const budget = document.querySelector('select[name="budget"]').value;
+            const timeline = document.querySelector('select[name="timeline"]').value;
+            if(!asset || !budget || !timeline) {
+                alert('Please define your sourcing parameters.');
+                return;
+            }
+        }
+
+        document.querySelectorAll('.step-content').forEach(el => el.classList.add('hidden'));
+        document.getElementById('step-' + step).classList.remove('hidden');
+        updateProgress(step);
+    }
+
+    function prevStep(step) {
+        document.querySelectorAll('.step-content').forEach(el => el.classList.add('hidden'));
+        document.getElementById('step-' + step).classList.remove('hidden');
+        updateProgress(step);
+    }
+
+    function updateProgress(step) {
+        const bar = document.getElementById('progress-bar');
+        if(step === 1) bar.style.width = '0%';
+        if(step === 2) bar.style.width = '50%';
+        if(step === 3) bar.style.width = '100%';
+
+        document.querySelectorAll('.step-indicator').forEach((el, index) => {
+            if(index + 1 < step) {
+                el.className = 'step-indicator active w-8 h-8 rounded-full bg-ark-gold text-black flex items-center justify-center font-bold text-xs relative z-10 shadow-[0_0_15px_rgba(212,175,55,0.4)] transition-all duration-300';
+                el.innerHTML = '✓';
+            } else if(index + 1 === step) {
+                el.className = 'step-indicator active w-8 h-8 rounded-full bg-ark-gold text-black flex items-center justify-center font-bold text-xs relative z-10 shadow-[0_0_15px_rgba(212,175,55,0.4)] transition-all duration-300';
+                el.innerHTML = step;
+            } else {
+                el.className = 'step-indicator w-8 h-8 rounded-full bg-ark-black border border-white/20 text-white flex items-center justify-center font-bold text-xs relative z-10 transition-all duration-300';
+                el.innerHTML = index + 1;
+            }
+        });
+    }
+
+    // Button loading state
+    document.getElementById('sourcingForm').addEventListener('submit', function(e) {
+        // Form is valid and submitted, show loading state
+        const btnText = document.getElementById('btnText');
+        const btnLoading = document.getElementById('btnLoading');
+        const submitBtn = document.getElementById('submitBtn');
+        
+        if(btnText && btnLoading && submitBtn) {
+            btnText.classList.add('hidden');
+            btnLoading.classList.remove('hidden');
+            submitBtn.classList.add('opacity-80', 'pointer-events-none');
+            submitBtn.classList.remove('hover:scale-105');
+        }
+    });
+</script>
+{% endblock %}

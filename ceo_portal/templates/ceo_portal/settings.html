@@ -1,0 +1,136 @@
+{% extends "ceo_portal/base.html" %}
+
+{% block header %}
+    <h2 class="text-6xl font-black italic tracking-tighter theme-text">Core <span class="text-ark-gold">Infrastructure</span></h2>
+{% endblock %}
+
+{% block content %}
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
+    <!-- Vault Directory Management -->
+    <div class="lg:col-span-2 space-y-8">
+        <div class="card">
+            <div class="flex justify-between items-center mb-8">
+                <div>
+                    <h3 class="text-2xl font-black italic theme-text">Vault Directories</h3>
+                    <p class="text-[10px] text-ark-gold font-black tracking-widest uppercase opacity-60">Manage Public Portals</p>
+                </div>
+                <button onclick="document.getElementById('addCategoryModal').classList.remove('hidden')" class="btn-gold !px-6">Initialize New Directory</button>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead>
+                        <tr class="border-b border-ark-border">
+                            <th class="py-4 text-[9px] font-black tracking-widest uppercase theme-text-muted">Directory Name</th>
+                            <th class="py-4 text-[9px] font-black tracking-widest uppercase theme-text-muted">Slug</th>
+                            <th class="py-4 text-[9px] font-black tracking-widest uppercase theme-text-muted">Assets</th>
+                            <th class="py-4 text-right text-[9px] font-black tracking-widest uppercase theme-text-muted">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-ark-border/30">
+                        {% for cat in categories %}
+                        <tr class="group hover:bg-white/[0.02] transition-colors">
+                            <td class="py-5">
+                                <span class="theme-text font-bold tracking-widest uppercase text-xs">{{ cat.name }}</span>
+                            </td>
+                            <td class="py-5">
+                                <span class="text-[10px] theme-text-muted font-mono opacity-40">{{ cat.slug }}</span>
+                            </td>
+                            <td class="py-5">
+                                <span class="px-3 py-1 rounded-full bg-ark-gold/10 text-ark-gold text-[9px] font-black">{{ cat.products.count }}</span>
+                            </td>
+                            <td class="py-5 text-right space-x-4">
+                                <button onclick="openEditModal('{{ cat.id }}', '{{ cat.name }}')" class="text-[9px] font-black tracking-widest uppercase text-gray-500 hover:text-white transition-all">Refine</button>
+                                <a href="{% url 'ceo_delete_category' cat.id %}" onclick="return confirm('Purging this directory will also archive all contained assets. Proceed?')" class="text-[9px] font-black tracking-widest uppercase text-red-500/40 hover:text-red-500 transition-all">Purge</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Executive Controls -->
+    <div class="space-y-8">
+        <div class="card border-red-500/20 bg-red-500/5">
+            <h3 class="text-lg font-black italic text-red-500 mb-4 uppercase tracking-tighter">Authority Termination</h3>
+            <p class="text-xs theme-text-muted leading-relaxed mb-8 opacity-60">
+                To hand over the keys to a successor, you must first terminate your current executive credentials. This action is irreversible.
+            </p>
+            <form method="POST" onsubmit="return confirm('FINAL WARNING: This will permanently erase your CEO credentials. Continue?');">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="delete_account">
+                <button type="submit" class="w-full py-4 border border-red-500/40 rounded-xl text-[10px] font-black tracking-[0.3em] uppercase text-red-500 hover:bg-red-500 hover:text-white transition-all">
+                    Sever All Authority
+                </button>
+            </form>
+        </div>
+
+        <div class="card opacity-40 grayscale">
+            <h3 class="text-[10px] font-black tracking-widest text-ark-gold uppercase mb-6">System Telemetry</h3>
+            <div class="space-y-4">
+                <div class="flex justify-between items-center text-[10px] font-bold">
+                    <span class="theme-text-muted">Supabase Storage</span>
+                    <span class="text-green-500">ENCRYPTED</span>
+                </div>
+                <div class="flex justify-between items-center text-[10px] font-bold">
+                    <span class="theme-text-muted">Database Node</span>
+                    <span class="text-green-500">SYNCED</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modals -->
+<div id="addCategoryModal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-6 bg-black/80 backdrop-blur-sm">
+    <div class="card w-full max-w-md animate-fadeInUp">
+        <h3 class="text-2xl font-black italic theme-text mb-8">Establish Directory</h3>
+        <form action="{% url 'ceo_add_category' %}" method="POST" class="space-y-6">
+            {% csrf_token %}
+            <div class="space-y-2">
+                <label class="text-[9px] text-ark-gold font-black tracking-widest uppercase">Directory Designation</label>
+                <input type="text" name="name" required placeholder="e.g. LUXURY TIMEPIECES"
+                       class="w-full bg-white/[0.03] border border-ark-border rounded-xl px-5 py-4 text-sm theme-text outline-none focus:border-ark-gold">
+            </div>
+            <div class="flex justify-end gap-4 pt-4">
+                <button type="button" onclick="document.getElementById('addCategoryModal').classList.add('hidden')" class="text-[9px] font-black tracking-widest uppercase theme-text-muted">Abort</button>
+                <button type="submit" class="btn-gold !px-8">Establish</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="editCategoryModal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-6 bg-black/80 backdrop-blur-sm">
+    <div class="card w-full max-w-md animate-fadeInUp">
+        <h3 class="text-2xl font-black italic theme-text mb-8">Refine Directory</h3>
+        <form id="editCategoryForm" method="POST" class="space-y-6">
+            {% csrf_token %}
+            <div class="space-y-2">
+                <label class="text-[9px] text-ark-gold font-black tracking-widest uppercase">Directory Designation</label>
+                <input type="text" name="name" id="editCategoryName" required
+                       class="w-full bg-white/[0.03] border border-ark-border rounded-xl px-5 py-4 text-sm theme-text outline-none focus:border-ark-gold">
+            </div>
+            <div class="flex justify-end gap-4 pt-4">
+                <button type="button" onclick="document.getElementById('editCategoryModal').classList.add('hidden')" class="text-[9px] font-black tracking-widest uppercase theme-text-muted">Abort</button>
+                <button type="submit" class="btn-gold !px-8">Update</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function openEditModal(id, name) {
+        const modal = document.getElementById('editCategoryModal');
+        const form = document.getElementById('editCategoryForm');
+        const input = document.getElementById('editCategoryName');
+        
+        form.action = `/ceo/settings/category/edit/${id}/`;
+        input.value = name;
+        modal.classList.remove('hidden');
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block title %}Transmission Successful | Global Ark Resources{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto px-6 py-48 text-center animate-fadeInUp">
+    <div class="w-20 h-20 bg-gold gold-gradient text-black rounded-full flex items-center justify-center mx-auto mb-12 shadow-[0_0_50px_rgba(212,175,55,0.4)]">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+        </svg>
+    </div>
+    {% if method == 'email' %}
+        <h1 class="brand-font italic text-7xl font-bold mb-8">Transmission <span class="gold-text-gradient">Dispatched</span></h1>
+        {% if tracking_code %}
+        <div class="mb-10 inline-block px-8 py-4 border border-gold/30 bg-[var(--bg-secondary)] rounded-2xl shadow-[0_0_20px_rgba(212,175,55,0.1)]">
+            <p class="text-[9px] theme-text-muted font-black tracking-[0.4em] uppercase mb-2">Your Unique Tracking Code</p>
+            <p class="text-3xl font-mono text-gold tracking-widest font-bold select-all">{{ tracking_code }}</p>
+        </div>
+        <p class="theme-text-muted font-light text-xl mb-16 leading-relaxed">Your sourcing profile has been submitted. You can track the progress of your request via the <a href="{% url 'sourcing_track' %}" class="text-gold hover:underline">Sourcing Track portal</a>.</p>
+        {% else %}
+        <p class="theme-text-muted font-light text-xl mb-16 leading-relaxed">Your selection and corporate details have been delivered directly to the CEO's office. You will receive a response at your provided email shortly.</p>
+        {% endif %}
+        <a href="{% url 'catalog' %}" class="inline-block gold-gradient px-12 py-5 text-black text-[10px] font-black uppercase tracking-widest hover:scale-110 transition-all">
+            Return to Portals
+        </a>
+    {% else %}
+        <h1 class="brand-font italic text-7xl font-bold mb-8">Ready to <span class="gold-text-gradient">Connect</span></h1>
+        {% if tracking_code %}
+        <div class="mb-10 inline-block px-8 py-4 border border-gold/30 bg-[var(--bg-secondary)] rounded-2xl shadow-[0_0_20px_rgba(212,175,55,0.1)]">
+            <p class="text-[9px] theme-text-muted font-black tracking-[0.4em] uppercase mb-2">Your Unique Tracking Code</p>
+            <p class="text-3xl font-mono text-gold tracking-widest font-bold select-all">{{ tracking_code }}</p>
+        </div>
+        <p class="theme-text-muted font-light text-xl mb-16 leading-relaxed">Your profile has been prepared. You can monitor your request status at the <a href="{% url 'sourcing_track' %}" class="text-gold hover:underline">tracking portal</a>. Please initialize the WhatsApp link below to begin your instant executive consultation.</p>
+        {% else %}
+        <p class="theme-text-muted font-light text-xl mb-16 leading-relaxed">Your selection has been prepared. Please initialize the WhatsApp link below to begin your instant executive consultation.</p>
+        {% endif %}
+        <div class="flex flex-col items-center space-y-8">
+            <a href="{{ wa_link }}" target="_blank" class="inline-block w-full max-w-md gold-gradient py-6 text-black text-[10px] font-black uppercase tracking-[0.3em] hover:scale-105 transition-all shadow-[0_20px_50px_rgba(212,175,55,0.3)]">
+                Initialize WhatsApp Inquiry
+            </a>
+            <a href="{% url 'catalog' %}" class="text-[10px] uppercase tracking-widest theme-text-muted hover:text-gold transition-colors font-bold">Return to Portals</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

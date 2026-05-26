@@ -1,0 +1,178 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ARK | RESTRICTED VAULT ACCESS</title>
+    <script src="{% static 'js/tailwind.min.js' %}"></script>
+    <link href="{% static 'css/fonts.css' %}" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #050505;
+            --bg-secondary: #0d0d0d;
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.6);
+            --accent-color: #D4AF37;
+            --accent-glow: rgba(212, 175, 55, 0.4);
+            --border-color: rgba(212, 175, 55, 0.12);
+        }
+
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: var(--bg-primary); 
+            color: var(--text-secondary); 
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-image: radial-gradient(circle at 50% 0%, var(--bg-secondary) 0%, var(--bg-primary) 70%);
+        }
+
+        h1, h2, h3, .premium-text { 
+            font-family: 'Outfit', sans-serif; 
+            font-weight: 700; 
+            color: var(--text-primary); 
+        }
+        
+        .glass-panel {
+            background: rgba(13, 13, 13, 0.7);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid var(--border-color);
+            border-radius: 1.5rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+        }
+
+        .btn-gold {
+            background: var(--accent-color);
+            color: var(--bg-primary);
+            padding: 1rem 2rem;
+            border-radius: 9999px;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 900;
+            font-size: 0.75rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 20px var(--accent-glow);
+            width: 100%;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-gold:hover { 
+            transform: translateY(-2px);
+            box-shadow: 0 0 30px var(--accent-glow);
+        }
+
+        .input-field {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 1rem 1.25rem;
+            border-radius: 1rem;
+            width: 100%;
+            font-size: 0.875rem;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .input-field:focus {
+            border-color: var(--accent-color);
+            background: rgba(212, 175, 55, 0.05);
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.1);
+        }
+
+        .errornote {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #ef4444;
+            padding: 1rem;
+            border-radius: 1rem;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+            font-size: 0.75rem;
+            text-align: center;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            animation: pulse-error 2s infinite;
+        }
+
+        @keyframes pulse-error {
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+
+        .grid-bg {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image: 
+                linear-gradient(to right, rgba(255,255,255,0.02) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: -1;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body class="antialiased">
+    <div class="grid-bg"></div>
+
+    <div class="w-full max-w-md px-6 z-10 relative">
+        
+        <!-- Header -->
+        <div class="text-center mb-10">
+            <div class="inline-flex items-center justify-center w-16 h-16 rounded-full border border-ark-gold/30 mb-6" style="border-color: var(--border-color); background: rgba(212, 175, 55, 0.05);">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" style="color: var(--accent-color);" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+            </div>
+            <p class="text-[10px] tracking-[0.5em] uppercase font-black opacity-80 mb-2" style="color: var(--accent-color);">SYSTEM LOCKED</p>
+            <h1 class="text-4xl font-black italic tracking-tighter mb-2">ARK <span style="color: var(--accent-color);">VAULT</span></h1>
+            <p class="text-xs tracking-widest uppercase opacity-50">Authorized Executive Personnel Only</p>
+        </div>
+
+        <!-- Login Panel -->
+        <div class="glass-panel p-8 md:p-10">
+            
+            {% if error_message %}
+                <div class="errornote">
+                    ACCESS DENIED: {{ error_message }}
+                </div>
+            {% endif %}
+            
+            <form action="{% url 'decoy_admin' %}" method="post" class="space-y-6">
+                {% csrf_token %}
+                
+                <div class="space-y-2">
+                    <label for="id_username" class="block text-[10px] font-black tracking-[0.2em] uppercase" style="color: var(--accent-color);">Access ID</label>
+                    <input type="text" name="username" autofocus required id="id_username" autocomplete="username" class="input-field" placeholder="Enter identification code">
+                </div>
+                
+                <div class="space-y-2">
+                    <label for="id_password" class="block text-[10px] font-black tracking-[0.2em] uppercase" style="color: var(--accent-color);">Security Clearance</label>
+                    <input type="password" name="password" required id="id_password" autocomplete="current-password" class="input-field" placeholder="Enter clearance passkey">
+                </div>
+                
+                <div class="pt-4">
+                    <button type="submit" class="btn-gold">
+                        Initiate Override Sequence
+                    </button>
+                </div>
+            </form>
+        </div>
+        
+        <div class="text-center mt-12">
+            <p class="text-[9px] tracking-[0.3em] uppercase opacity-30">
+                &copy; 2026 ARK GLOBAL RESOURCES LTD. <br>
+                ALL ATTEMPTS ARE LOGGED AND MONITORED.
+            </p>
+        </div>
+
+    </div>
+
+</body>
+</html>

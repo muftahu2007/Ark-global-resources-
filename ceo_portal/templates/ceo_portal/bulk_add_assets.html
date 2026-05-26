@@ -1,0 +1,96 @@
+{% extends 'ceo_portal/base.html' %}
+
+{% block header %}
+    <h2 class="text-6xl font-black italic tracking-tighter theme-text">Mass <span class="text-ark-gold">Deployment</span></h2>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto">
+    <div class="card relative overflow-hidden">
+        <!-- Decoration -->
+        <div class="absolute top-0 right-0 p-8 opacity-5">
+            <svg class="w-32 h-32 text-ark-gold" fill="currentColor" viewBox="0 0 24 24"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H8V4h12v12z"/></svg>
+        </div>
+
+        <form method="POST" enctype="multipart/form-data" class="space-y-10 relative z-10">
+            {% csrf_token %}
+            
+            <div class="p-6 bg-ark-gold/10 border border-ark-gold/20 rounded-2xl mb-8">
+                <p class="text-ark-gold text-[10px] font-black tracking-widest uppercase mb-2">Executive Notice</p>
+                <p class="text-sm theme-text-muted">Assets uploaded via Mass Deployment are automatically set to <strong>Archived</strong> and hidden from the public catalog. You can refine their designations, SKUs, and specifications later at your convenience.</p>
+            </div>
+
+            <!-- Category & Storage -->
+            <div class="grid grid-cols-1 gap-8">
+                <div class="space-y-3">
+                    <label class="text-[9px] text-ark-gold font-black tracking-[0.3em] uppercase">Target Vault Directory</label>
+                    <select name="category" id="categorySelect"
+                            class="w-full bg-ark-card border border-ark-border rounded-xl px-5 py-4 text-sm theme-text focus:border-ark-gold outline-none">
+                        <option value="">-- Select Existing or Add New --</option>
+                        {% for cat in categories %}
+                            <option value="{{ cat.id }}">{{ cat.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <input type="text" name="new_category" id="newCategoryInput" placeholder="Enter New Category Name" 
+                           class="w-full bg-white/[0.03] border border-ark-border rounded-xl px-5 py-4 text-sm theme-text placeholder-gray-600 focus:border-ark-gold focus:ring-1 focus:ring-ark-gold transition-all outline-none mt-4 hidden">
+                    <button type="button" onclick="toggleNewCategory()" id="toggleBtn" class="text-[9px] text-ark-gold font-black tracking-widest uppercase opacity-60 hover:opacity-100 transition-all">+ Add New Directory</button>
+                </div>
+                
+                <div class="space-y-3">
+                    <label class="text-[9px] text-ark-gold font-black tracking-[0.3em] uppercase">Multiple Media Attachments</label>
+                    <div class="relative group h-48">
+                        <input type="file" name="images" required multiple accept="image/*"
+                               class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20" onchange="updateFileCount(this)">
+                        <div class="w-full h-full bg-white/[0.03] border-2 border-dashed border-ark-border rounded-xl flex flex-col items-center justify-center text-sm text-gray-500 group-hover:border-ark-gold group-hover:bg-ark-gold/5 transition-all">
+                            <span class="text-4xl mb-4 opacity-50 group-hover:opacity-100 transition-opacity">📥</span>
+                            <span id="fileCountText" class="font-bold tracking-widest uppercase text-[10px]">Select Multiple High-Res Images</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Submission -->
+            <div class="pt-8 flex justify-end gap-6">
+                <a href="{% url 'ceo_inventory' %}" class="px-8 py-4 text-[10px] font-black tracking-widest text-gray-500 hover:theme-text transition-all uppercase">Abort</a>
+                <button type="submit" class="btn-gold">
+                    Initiate Mass Deployment
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function toggleNewCategory() {
+        const select = document.getElementById('categorySelect');
+        const input = document.getElementById('newCategoryInput');
+        const btn = document.getElementById('toggleBtn');
+        
+        if (input.classList.contains('hidden')){
+            input.classList.remove('hidden');
+            select.classList.add('hidden');
+            select.required = false;
+            input.required = true;
+            btn.innerText = "- Use Existing Directory";
+        } else {
+            input.classList.add('hidden');
+            select.classList.remove('hidden');
+            select.required = true;
+            input.required = false;
+            btn.innerText = "+ Add New Directory";
+        }
+    }
+
+    function updateFileCount(input) {
+        const count = input.files.length;
+        const text = document.getElementById('fileCountText');
+        if (count > 0) {
+            text.innerHTML = `<span class="text-ark-gold">${count} Assets</span> Ready for Deployment`;
+        } else {
+            text.innerText = "Select Multiple High-Res Images";
+        }
+    }
+</script>
+{% endblock %}

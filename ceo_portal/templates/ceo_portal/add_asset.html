@@ -1,0 +1,101 @@
+{% extends 'ceo_portal/base.html' %}
+
+{% block header %}
+    <h2 class="text-6xl font-black italic tracking-tighter theme-text">Asset <span class="text-ark-gold">Deployment</span></h2>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto">
+    <div class="card relative overflow-hidden">
+        <!-- Decoration -->
+        <div class="absolute top-0 right-0 p-8 opacity-5">
+            <svg class="w-32 h-32 text-ark-gold" fill="currentColor" viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+        </div>
+
+        <form method="POST" enctype="multipart/form-data" class="space-y-10 relative z-10">
+            {% csrf_token %}
+            
+            <!-- Asset Identity -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="space-y-3">
+                    <label class="text-[9px] text-ark-gold font-black tracking-[0.3em] uppercase">Asset Designation</label>
+                    <input type="text" name="name" required placeholder="e.g. Mercedes-Benz S-Class" 
+                           class="w-full bg-white/[0.03] border border-ark-border rounded-xl px-5 py-4 text-sm theme-text placeholder-gray-600 focus:border-ark-gold focus:ring-1 focus:ring-ark-gold transition-all outline-none">
+                </div>
+                <div class="space-y-3">
+                    <label class="text-[9px] text-ark-gold font-black tracking-[0.3em] uppercase">Identification SKU</label>
+                    <input type="text" name="sku" required placeholder="ARK-VLT-001" 
+                           class="w-full bg-white/[0.03] border border-ark-border rounded-xl px-5 py-4 text-sm theme-text placeholder-gray-600 focus:border-ark-gold focus:ring-1 focus:ring-ark-gold transition-all outline-none">
+                </div>
+            </div>
+
+            <!-- Category & Storage -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="space-y-3">
+                    <label class="text-[9px] text-ark-gold font-black tracking-[0.3em] uppercase">Vault Directory</label>
+                    <select name="category" id="categorySelect"
+                            class="w-full bg-ark-card border border-ark-border rounded-xl px-5 py-4 text-sm theme-text focus:border-ark-gold outline-none">
+                        <option value="">-- Select Existing or Add New --</option>
+                        {% for cat in categories %}
+                            <option value="{{ cat.id }}">{{ cat.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <input type="text" name="new_category" id="newCategoryInput" placeholder="Enter New Category Name" 
+                           class="w-full bg-white/[0.03] border border-ark-border rounded-xl px-5 py-4 text-sm theme-text placeholder-gray-600 focus:border-ark-gold focus:ring-1 focus:ring-ark-gold transition-all outline-none mt-4 hidden">
+                    <button type="button" onclick="toggleNewCategory()" id="toggleBtn" class="text-[9px] text-ark-gold font-black tracking-widest uppercase opacity-60 hover:opacity-100 transition-all">+ Add New Category</button>
+                </div>
+                <div class="space-y-3">
+                    <label class="text-[9px] text-ark-gold font-black tracking-[0.3em] uppercase">Media Attachment</label>
+                    <div class="relative group">
+                        <input type="file" name="image" required 
+                               class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20">
+                        <div class="w-full bg-white/[0.03] border-2 border-dashed border-ark-border rounded-xl px-5 py-4 text-sm text-gray-500 group-hover:border-ark-gold transition-all flex items-center justify-between">
+                            <span>Select High-Res Image</span>
+                            <span class="text-ark-gold">📁</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detailed Analysis -->
+            <div class="space-y-3">
+                <label class="text-[9px] text-ark-gold font-black tracking-[0.3em] uppercase">Asset Specification</label>
+                <textarea name="description" rows="5" required placeholder="Describe the luxury details and unique selling points..."
+                          class="w-full bg-white/[0.03] border border-ark-border rounded-xl px-5 py-4 text-sm theme-text placeholder-gray-600 focus:border-ark-gold focus:ring-1 focus:ring-ark-gold transition-all outline-none"></textarea>
+            </div>
+
+            <!-- Submission -->
+            <div class="pt-8 flex justify-end gap-6">
+                <a href="{% url 'ceo_inventory' %}" class="px-8 py-4 text-[10px] font-black tracking-widest text-gray-500 hover:theme-text transition-all uppercase">Abort</a>
+                <button type="submit" class="btn-gold">
+                    Secure Asset to Vault
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function toggleNewCategory() {
+        const select = document.getElementById('categorySelect');
+        const input = document.getElementById('newCategoryInput');
+        const btn = document.getElementById('toggleBtn');
+        
+        if (input.classList.contains('hidden')) {
+            input.classList.remove('hidden');
+            select.classList.add('hidden');
+            select.required = false;
+            input.required = true;
+            btn.innerText = "- Use Existing Category";
+        } else {
+            input.classList.add('hidden');
+            select.classList.remove('hidden');
+            select.required = true;
+            input.required = false;
+            btn.innerText = "+ Add New Category";
+        }
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,185 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ARK | EXECUTIVE AUTHENTICATION</title>
+    <script src="{% static 'js/tailwind.min.js' %}"></script>
+    <link href="{% static 'css/fonts.css' %}" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'ark-black': '#020202',
+                        'ark-dark': '#080808',
+                        'ark-gold': '#C5A059',
+                        'ark-gold-bright': '#E5C17D',
+                        'ark-gold-muted': '#8E6F3E',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                        tech: ['Orbitron', 'sans-serif'],
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .glass {
+            background: rgba(15, 15, 15, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .gold-glow {
+            box-shadow: 0 0 20px rgba(197, 160, 89, 0.15);
+        }
+        .input-glow:focus {
+            box-shadow: 0 0 15px rgba(197, 160, 89, 0.2);
+            border-color: rgba(197, 160, 89, 0.5);
+        }
+        body {
+            background: radial-gradient(circle at 50% 50%, #1a1a1a 0%, #020202 100%);
+            overflow: hidden;
+        }
+        .mesh-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background-image: 
+                radial-gradient(at 0% 0%, hsla(41, 49%, 36%, 0.15) 0, transparent 50%), 
+                radial-gradient(at 100% 100%, hsla(41, 49%, 36%, 0.1) 0, transparent 50%);
+        }
+    </style>
+</head>
+<body class="text-gray-300 min-h-screen flex items-center justify-center p-6 font-sans">
+    <div class="mesh-bg"></div>
+    
+    <!-- Decorative Elements -->
+    <div class="absolute top-1/4 -left-20 w-96 h-96 bg-ark-gold/5 rounded-full blur-[100px] animate-pulse-slow"></div>
+    <div class="absolute bottom-1/4 -right-20 w-96 h-96 bg-ark-gold/5 rounded-full blur-[100px] animate-pulse-slow" style="animation-delay: 2s;"></div>
+
+    <div class="w-full max-w-md relative">
+        <!-- Badge -->
+        <div class="absolute -top-12 left-1/2 -translate-x-1/2 z-10">
+            <div class="w-24 h-24 rounded-full glass flex items-center justify-center border border-ark-gold/20 shadow-2xl animate-float">
+                <span class="font-serif text-3xl text-ark-gold tracking-tighter">A</span>
+            </div>
+        </div>
+
+        <div class="glass rounded-3xl p-10 pt-16 shadow-2xl relative overflow-hidden">
+            <!-- Inner decorative line -->
+            <div class="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-ark-gold/30 to-transparent"></div>
+            
+            <div class="text-center mb-10">
+                <h1 class="font-tech text-xs text-ark-gold tracking-[0.5em] uppercase mb-2">Secure Link</h1>
+                <h2 class="font-serif text-3xl text-white tracking-wide">CEO Portal</h2>
+                <div class="flex justify-center mt-4">
+                    <div class="h-[1px] w-12 bg-ark-gold/50"></div>
+                </div>
+            </div>
+
+            <form method="post" class="space-y-8">
+                {% csrf_token %}
+                
+                {% if form.non_field_errors %}
+                    <div class="bg-red-500/10 border border-red-500/20 p-4 rounded-xl text-center">
+                        {% for error in form.non_field_errors %}
+                            <p class="text-red-400 text-xs font-medium">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <div class="space-y-6">
+                    <!-- Username Field -->
+                    <div class="relative group">
+                        <label for="id_username" class="absolute -top-2.5 left-4 px-2 bg-ark-black text-[10px] font-bold text-ark-gold tracking-widest uppercase z-10 transition-all group-focus-within:text-ark-gold-bright">
+                            Username
+                        </label>
+                        <input type="text" name="username" id="id_username" 
+                               class="w-full bg-transparent border border-white/10 rounded-xl px-5 py-4 text-sm text-white placeholder-gray-600 focus:outline-none input-glow transition-all"
+                               placeholder="Enter your executive ID" required>
+                        {% if form.username.errors %}
+                            <p class="text-red-500 text-[10px] mt-1 ml-2">{{ form.username.errors|striptags }}</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Password Field -->
+                    <div class="relative group">
+                        <label for="id_password" class="absolute -top-2.5 left-4 px-2 bg-ark-black text-[10px] font-bold text-ark-gold tracking-widest uppercase z-10 transition-all group-focus-within:text-ark-gold-bright">
+                            Password
+                        </label>
+                        <input type="password" name="password" id="id_password" 
+                               class="w-full bg-transparent border border-white/10 rounded-xl px-5 py-4 text-sm text-white placeholder-gray-600 focus:outline-none input-glow transition-all"
+                               placeholder="••••••••••••" required>
+                        {% if form.password.errors %}
+                            <p class="text-red-500 text-[10px] mt-1 ml-2">{{ form.password.errors|striptags }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between px-2">
+                    <label class="flex items-center space-x-2 cursor-pointer">
+                        <input type="checkbox" class="w-3 h-3 bg-transparent border-white/20 rounded focus:ring-0 text-ark-gold">
+                        <span class="text-[10px] text-gray-500 uppercase tracking-tighter">Remember Terminal</span>
+                    </label>
+                    <a href="{% url 'password_reset' %}" class="text-[10px] text-ark-gold/60 uppercase tracking-tighter hover:text-ark-gold transition-colors">Emergency Reset?</a>
+                </div>
+
+                <button type="submit" 
+                        class="group relative w-full overflow-hidden rounded-xl bg-ark-gold p-[1px] transition-all hover:shadow-[0_0_30px_rgba(197,160,89,0.3)]">
+                    <div class="relative flex items-center justify-center bg-ark-black rounded-[11px] py-4 transition-all group-hover:bg-transparent">
+                        <span class="font-tech text-xs text-ark-gold tracking-[0.3em] uppercase group-hover:text-black transition-all">
+                            Login
+                        </span>
+                    </div>
+                </button>
+            </form>
+
+            <div class="mt-10 pt-8 border-t border-white/5 text-center">
+                <p class="text-[9px] text-gray-600 uppercase tracking-[0.2em] mb-4">Secured by Ark Intelligence Systems</p>
+                <div class="flex justify-center space-x-4">
+                    <div class="w-1 h-1 rounded-full bg-ark-gold/30"></div>
+                    <div class="w-1 h-1 rounded-full bg-ark-gold/30"></div>
+                    <div class="w-1 h-1 rounded-full bg-ark-gold/30"></div>
+                </div>
+            </div>
+        </div>
+
+        {% if messages %}
+            <div class="mt-8 space-y-3">
+                {% for message in messages %}
+                    <div class="glass border-l-2 {% if message.tags == 'error' %}border-red-500{% else %}border-ark-gold{% endif %} p-4 rounded-r-xl animate-float">
+                        <p class="text-[11px] {% if message.tags == 'error' %}text-red-400{% else %}text-ark-gold-bright{% endif %} font-medium tracking-wide">{{ message }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Footer System Status -->
+    <div class="fixed bottom-6 left-6 flex items-center space-x-3">
+        <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+        <span class="text-[10px] font-tech text-gray-600 uppercase tracking-widest">System Online</span>
+    </div>
+    <div class="fixed bottom-6 right-6">
+        <span class="text-[10px] font-tech text-gray-600 uppercase tracking-widest">v2.0.4-EXECUTIVE</span>
+    </div>
+</body>
+</html>

@@ -1,0 +1,300 @@
+{% extends 'ceo_portal/base.html' %}
+
+{% block header %}
+    <h2 class="text-6xl font-black italic tracking-tighter" style="color: var(--text-primary);">Base <span class="text-ark-gold">Operations</span></h2>
+    <p class="text-sm theme-text-muted mt-2 max-w-xl font-light">
+        Live command overview of global assets, incoming intelligence, and private fleet availability.
+    </p>
+{% endblock %}
+
+{% block header_actions %}
+    <div class="flex items-center gap-6 text-right border-l border-white/5 pl-8 hidden md:flex">
+        <div>
+            <div class="flex items-center justify-end gap-2 mb-1">
+                <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                <p class="text-[9px] font-black tracking-[0.3em] uppercase text-green-500">System Secure</p>
+            </div>
+            <p id="liveClock" class="font-tech text-2xl text-ark-gold tracking-widest">--:--:--</p>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
+    <!-- Metric Cards -->
+    <div class="card group relative overflow-hidden hover:scale-105 hover:z-10 hover:shadow-2xl transition-all duration-700">
+        <div class="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+            <svg class="w-24 h-24 text-ark-gold" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+        </div>
+        <p class="text-[10px] font-black tracking-[0.3em] uppercase theme-text-muted mb-2">Total Inventory</p>
+        <h3 class="text-5xl font-black italic" style="color: var(--text-primary);">{{ product_count }}</h3>
+        <p class="text-[9px] text-ark-gold mt-4 font-bold tracking-widest">ASSETS SECURED</p>
+    </div>
+
+    <div class="card group relative overflow-hidden hover:scale-105 hover:z-10 hover:shadow-2xl transition-all duration-700">
+        <div class="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+            <svg class="w-24 h-24 text-ark-gold" fill="currentColor" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+        </div>
+        <p class="text-[10px] font-black tracking-[0.3em] uppercase theme-text-muted mb-2">Active Intelligence</p>
+        <h3 class="text-5xl font-black italic" style="color: var(--text-primary);">{{ lead_count }}</h3>
+        <p class="text-[9px] text-ark-gold mt-4 font-bold tracking-widest">LIVE INQUIRIES</p>
+    </div>
+
+    <div class="card group relative overflow-hidden hover:scale-105 hover:z-10 hover:shadow-2xl transition-all duration-700 border-red-500/10 hover:border-red-500/30">
+        <div class="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+            <svg class="w-24 h-24 text-red-500" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+        </div>
+        <p class="text-[10px] font-black tracking-[0.3em] uppercase text-red-500/70 mb-2">Decoy Traps</p>
+        <h3 class="text-5xl font-black italic text-red-500">{{ threat_count }}</h3>
+        <p class="text-[9px] text-ark-gold mt-4 font-bold tracking-widest">THREATS INTERCEPTED</p>
+    </div>
+
+    <div class="card border-ark-gold/30 bg-ark-gold/[0.02] hover:scale-105 hover:z-10 hover:shadow-2xl transition-all duration-700">
+        <p class="text-[10px] font-black tracking-[0.3em] uppercase theme-text-muted mb-2">Quick Command</p>
+        <div class="mt-4">
+            <a href="{% url 'ceo_add_asset' %}" class="btn-gold block text-center py-2 text-xs">
+                Deploy Asset
+            </a>
+            <a href="{% url 'ceo_bulk_add_assets' %}" class="block text-center mt-2.5 text-[8px] font-black tracking-widest uppercase text-ark-gold opacity-60 hover:opacity-100 transition-opacity">
+                Mass Deploy (Bulk)
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Market Intelligence Charts -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-12 mb-16">
+    <!-- Lead Velocity Chart -->
+    <div class="lg:col-span-2 glass-panel p-8">
+        <div class="flex items-center justify-between mb-8">
+            <h3 class="text-xs font-black tracking-[0.3em] uppercase opacity-60">Lead Velocity</h3>
+            <p class="text-[9px] font-bold tracking-widest text-ark-gold">LAST 14 DAYS</p>
+        </div>
+        <div class="relative w-full" style="height: 300px; min-height: 300px;">
+            <canvas id="leadVelocityChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Portfolio Distribution Chart -->
+    <div class="glass-panel p-8">
+        <div class="flex items-center justify-between mb-8">
+            <h3 class="text-xs font-black tracking-[0.3em] uppercase opacity-60">Vault Split</h3>
+        </div>
+        <div class="flex items-center justify-center relative" style="height: 250px; min-height: 250px;">
+            <canvas id="portfolioChart"></canvas>
+            <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                <p class="text-2xl font-black italic tracking-tighter" style="color: var(--text-primary);">{{ product_count }}</p>
+                <p class="text-[8px] font-black tracking-widest uppercase opacity-40">Total Assets</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <!-- Recent Leads -->
+    <div class="space-y-8">
+        <div class="flex items-center justify-between border-b border-ark-border pb-4">
+            <h3 class="text-xl font-black italic tracking-tight uppercase" style="color: var(--text-primary);">Intelligence <span class="text-ark-gold">Feed</span></h3>
+            <a href="{% url 'ceo_leads' %}" class="text-[10px] font-black tracking-widest text-ark-gold uppercase">Full Log</a>
+        </div>
+        <div class="space-y-4">
+            {% for lead in leads %}
+                <div class="glass-panel p-6 hover:scale-105 hover:z-10 hover:shadow-2xl transition-all duration-500 flex justify-between items-center group cursor-pointer">
+                    <div>
+                        <p class="text-xs font-black tracking-widest uppercase mb-1" style="color: var(--text-primary);">{{ lead.customer_name }}</p>
+                        <p class="text-[10px] text-gray-500 font-bold italic tracking-wider">
+                            {% for product in lead.items_requested.all|slice:":1" %}
+                                {{ product.name }}{% if lead.items_requested.count > 1 %} (+{{ lead.items_requested.count|add:"-1" }} others){% endif %}
+                            {% empty %}
+                                General Inquiry
+                            {% endfor %}
+                        </p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-[9px] text-ark-gold font-black uppercase tracking-widest">{{ lead.created_at|timesince }} ago</p>
+                        <div class="w-1 h-1 bg-ark-gold rounded-full ml-auto mt-2 group-hover:scale-[3] transition-transform"></div>
+                    </div>
+                </div>
+            {% empty %}
+                <p class="text-xs text-gray-600 font-bold uppercase tracking-widest italic py-12 text-center border-2 border-dashed border-ark-border rounded-2xl">No active leads detected.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Threat Monitoring Console -->
+    <div class="space-y-8">
+        <div class="flex items-center justify-between border-b border-ark-border pb-4">
+            <h3 class="text-xl font-black italic tracking-tight uppercase" style="color: var(--text-primary);">Threat <span class="text-red-500">Console</span></h3>
+            <span class="text-[10px] font-black tracking-widest text-red-500 uppercase">Live Intercepts</span>
+        </div>
+        <div class="space-y-4">
+            {% for log in security_logs %}
+                <div class="glass-panel p-6 border-red-500/10 hover:border-red-500/30 hover:scale-105 hover:z-10 hover:shadow-2xl transition-all duration-500 flex flex-col justify-between group">
+                    <div class="flex justify-between items-start mb-2">
+                        <span class="text-[9px] bg-red-500/10 text-red-500 px-2 py-0.5 rounded font-black tracking-widest">BLOCKED</span>
+                        <p class="text-[9px] text-ark-gold font-black uppercase tracking-widest">{{ log.timestamp|timesince }} ago</p>
+                    </div>
+                    <div>
+                        <p class="font-tech text-xs tracking-widest text-red-500 mb-1">{{ log.ip_address }}</p>
+                        <p class="text-[10px] theme-text-muted font-bold italic truncate">
+                            Tried user: <span class="text-white font-mono font-bold">{{ log.attempted_username }}</span>
+                        </p>
+                        <p class="text-[8px] text-gray-600 mt-2 truncate font-mono" title="{{ log.user_agent }}">{{ log.user_agent }}</p>
+                    </div>
+                </div>
+            {% empty %}
+                <p class="text-xs text-gray-600 font-bold uppercase tracking-widest italic py-12 text-center border-2 border-dashed border-ark-border rounded-2xl">No active threats. System secure.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Recent Assets -->
+    <div class="space-y-8">
+        <div class="flex items-center justify-between border-b border-ark-border pb-4">
+            <h3 class="text-xl font-black italic tracking-tight uppercase" style="color: var(--text-primary);">Vault <span class="text-ark-gold">Inventory</span></h3>
+            <a href="{% url 'ceo_inventory' %}" class="text-[10px] font-black tracking-widest text-ark-gold uppercase">View Vault</a>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+            {% for product in products %}
+                <div class="relative group rounded-xl overflow-hidden aspect-[4/3] glass-panel">
+                    {% if product.image %}
+                        <img src="{{ product.image.url }}" class="w-full h-full object-cover opacity-40 group-hover:opacity-80 group-hover:scale-110 transition-all duration-700">
+                    {% endif %}
+                    <div class="absolute inset-0 bg-gradient-to-t from-ark-deep via-transparent to-transparent"></div>
+                    <div class="absolute bottom-0 left-0 p-4">
+                        <p class="text-[8px] text-ark-gold font-black tracking-[0.2em] uppercase">{{ product.category }}</p>
+                        <p class="text-[10px] font-bold tracking-widest uppercase truncate" style="color: var(--text-primary);">{{ product.name }}</p>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block scripts %}
+{{ lead_velocity|json_script:"leadVelocityData" }}
+{{ category_distribution|json_script:"categoryDistributionData" }}
+<script>
+    console.log("ARK Analytics: System Standby...");
+
+    window.addEventListener('load', () => {
+        // Adding a slight delay to ensure the library is fully processed by the browser
+        setTimeout(() => {
+            console.log("ARK Analytics: Initializing...");
+            
+            const canvas = document.getElementById('leadVelocityChart');
+            const ctx = canvas ? canvas.getContext('2d') : null;
+
+            try {
+                // 1. Library Verification
+                if (typeof Chart === 'undefined') {
+                    throw new Error("LIBRARY_MISSING: The system cannot find Chart.js. Check file path: static/js/chart.min.js");
+                }
+
+                // 2. Element Verification
+                const canvasPortfolio = document.getElementById('portfolioChart');
+                const velocityElem = document.getElementById('leadVelocityData');
+                const portfolioElem = document.getElementById('categoryDistributionData');
+                
+                if (!canvas || !canvasPortfolio || !velocityElem || !portfolioElem) {
+                    throw new Error("DOM_ERROR: Some dashboard elements are missing.");
+                }
+
+                const ctxPortfolio = canvasPortfolio.getContext('2d');
+                
+                // 3. Data Parsing
+                const rawVelocity = JSON.parse(velocityElem.textContent || '[]');
+                const velocityLabels = rawVelocity.map(entry => entry.date);
+                const velocityData = rawVelocity.map(entry => entry.count);
+
+                const rawPortfolio = JSON.parse(portfolioElem.textContent || '[]');
+                const portfolioLabels = rawPortfolio.map(cat => cat.name);
+                const portfolioData = rawPortfolio.map(cat => cat.product_count);
+
+                // 4. Color Logic
+                const rootStyle = getComputedStyle(document.documentElement);
+                let accent = rootStyle.getPropertyValue('--accent-color').trim() || '#D4AF37';
+                let backgroundAccent = accent.startsWith('#') ? accent + '22' : 'rgba(212, 175, 55, 0.15)';
+                const textMuted = 'rgba(255, 255, 255, 0.4)';
+
+                // 5. Initialize Lead Velocity Chart
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: velocityLabels,
+                        datasets: [{
+                            label: 'New Leads',
+                            data: velocityData,
+                            borderColor: accent,
+                            backgroundColor: backgroundAccent,
+                            borderWidth: 2,
+                            pointBackgroundColor: accent,
+                            pointRadius: 2,
+                            tension: 0.4,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            x: { grid: { display: false }, ticks: { color: textMuted, font: { size: 9 } } },
+                            y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)', drawBorder: false }, ticks: { color: textMuted, font: { size: 9 }, stepSize: 1 } }
+                        }
+                    }
+                });
+
+                // 6. Initialize Portfolio Chart
+                new Chart(ctxPortfolio, {
+                    type: 'doughnut',
+                    data: {
+                        labels: portfolioLabels,
+                        datasets: [{
+                            data: portfolioData,
+                            backgroundColor: [accent, '#ffffff', 'rgba(255,255,255,0.2)', 'rgba(255,255,255,0.1)'],
+                            borderWidth: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: '80%',
+                        plugins: { legend: { display: false } }
+                    }
+                });
+
+                console.log("ARK Analytics: System operational.");
+
+                // Initialize Live Clock (Kano, Nigeria Time)
+                const clockElem = document.getElementById('liveClock');
+                if (clockElem) {
+                    setInterval(() => {
+                        const now = new Date();
+                        const timeString = now.toLocaleTimeString('en-US', { 
+                            timeZone: 'Africa/Lagos',
+                            hour12: true, 
+                            hour: '2-digit', 
+                            minute: '2-digit', 
+                            second: '2-digit' 
+                        });
+                        clockElem.textContent = timeString + ' WAT';
+                    }, 1000);
+                }
+
+            } catch (error) {
+                console.error("ARK Analytics Error:", error);
+                if (ctx) {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    ctx.fillStyle = "#D4AF37";
+                    ctx.font = "bold 12px Inter";
+                    ctx.fillText("SYSTEM OFFLINE", 10, 30);
+                    ctx.font = "10px Inter";
+                    ctx.fillText(error.message, 10, 50);
+                    ctx.fillText("Check browser console (F12) for more.", 10, 70);
+                }
+            }
+        }, 500);
+    });
+</script>
+{% endblock %}

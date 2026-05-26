@@ -1,0 +1,15 @@
+.env
+db.sqlite3
+__pycache__/
+*.pyc
+.vscode/
+
+# Other common Django/Python exclusions
+*.pyo
+*.pyd
+env/
+venv/
+staticfiles/
+media/
+session_debug.txt
+.DS_Store

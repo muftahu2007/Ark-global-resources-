@@ -1,0 +1,99 @@
+{% extends 'ceo_portal/base.html' %}
+
+{% block header %}
+    <h2 class="text-6xl font-black italic tracking-tighter theme-text">Asset <span class="text-ark-gold">Refinement</span></h2>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto">
+    <div class="card relative overflow-hidden">
+        <!-- Decoration -->
+        <div class="absolute top-0 right-0 p-8 opacity-5">
+            <svg class="w-32 h-32 text-ark-gold" fill="currentColor" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+        </div>
+
+        <form method="POST" enctype="multipart/form-data" class="space-y-10 relative z-10">
+            {% csrf_token %}
+            
+            <!-- Asset Identity -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="space-y-3">
+                    <label class="text-[9px] text-ark-gold font-black tracking-[0.3em] uppercase">Asset Designation</label>
+                    <input type="text" name="name" required value="{{ product.name }}"
+                           class="w-full bg-white/[0.03] border border-ark-border rounded-xl px-5 py-4 text-sm theme-text placeholder-gray-600 focus:border-ark-gold focus:ring-1 focus:ring-ark-gold transition-all outline-none">
+                </div>
+                <div class="space-y-3">
+                    <label class="text-[9px] text-ark-gold font-black tracking-[0.3em] uppercase">Identification SKU</label>
+                    <input type="text" name="sku" required value="{{ product.sku }}"
+                           class="w-full bg-white/[0.03] border border-ark-border rounded-xl px-5 py-4 text-sm theme-text placeholder-gray-600 focus:border-ark-gold focus:ring-1 focus:ring-ark-gold transition-all outline-none">
+                </div>
+            </div>
+
+            <!-- Category & Storage -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="space-y-3">
+                    <label class="text-[9px] text-ark-gold font-black tracking-[0.3em] uppercase">Vault Directory</label>
+                    <select name="category" id="categorySelect"
+                            class="w-full bg-ark-card border border-ark-border rounded-xl px-5 py-4 text-sm theme-text focus:border-ark-gold outline-none">
+                        {% for cat in categories %}
+                            <option value="{{ cat.id }}" {% if product.category.id == cat.id %}selected{% endif %}>{{ cat.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <input type="text" name="new_category" id="newCategoryInput" placeholder="Enter New Category Name" 
+                           class="w-full bg-white/[0.03] border border-ark-border rounded-xl px-5 py-4 text-sm theme-text placeholder-gray-600 focus:border-ark-gold focus:ring-1 focus:ring-ark-gold transition-all outline-none mt-4 hidden">
+                    <button type="button" onclick="toggleNewCategory()" id="toggleBtn" class="text-[9px] text-ark-gold font-black tracking-widest uppercase opacity-60 hover:opacity-100 transition-all">+ Add New Category</button>
+                </div>
+                <div class="space-y-3">
+                    <label class="text-[9px] text-ark-gold font-black tracking-[0.3em] uppercase">Media Attachment (Optional)</label>
+                    <div class="relative group">
+                        <input type="file" name="image" 
+                               class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20">
+                        <div class="w-full bg-white/[0.03] border-2 border-dashed border-ark-border rounded-xl px-5 py-4 text-sm text-gray-500 group-hover:border-ark-gold transition-all flex items-center justify-between">
+                            <span>{% if product.image %}Replace Current Image{% else %}Select High-Res Image{% endif %}</span>
+                            <span class="text-ark-gold">📁</span>
+                        </div>
+                    </div>
+                    {% if product.image %}
+                        <p class="text-[9px] theme-text-muted mt-2 italic">Current: {{ product.image.name }}</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Detailed Analysis -->
+            <div class="space-y-3">
+                <label class="text-[9px] text-ark-gold font-black tracking-[0.3em] uppercase">Asset Specification</label>
+                <textarea name="description" rows="5" required
+                          class="w-full bg-white/[0.03] border border-ark-border rounded-xl px-5 py-4 text-sm theme-text placeholder-gray-600 focus:border-ark-gold focus:ring-1 focus:ring-ark-gold transition-all outline-none">{{ product.description }}</textarea>
+            </div>
+
+            <!-- Submission -->
+            <div class="pt-8 flex justify-end gap-6">
+                <a href="{% url 'ceo_inventory_category' product.category.slug %}" class="px-8 py-4 text-[10px] font-black tracking-widest text-gray-500 hover:theme-text transition-all uppercase">Abort</a>
+                <button type="submit" class="btn-gold">
+                    Update Vault Record
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function toggleNewCategory() {
+        const select = document.getElementById('categorySelect');
+        const input = document.getElementById('newCategoryInput');
+        const btn = document.getElementById('toggleBtn');
+        
+        if (input.classList.contains('hidden')) {
+            input.classList.remove('hidden');
+            select.classList.add('hidden');
+            btn.innerText = "- Use Existing Category";
+        } else {
+            input.classList.add('hidden');
+            select.classList.remove('hidden');
+            btn.innerText = "+ Add New Category";
+        }
+    }
+</script>
+{% endblock %}

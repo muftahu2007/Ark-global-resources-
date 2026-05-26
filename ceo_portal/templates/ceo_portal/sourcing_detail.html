@@ -1,0 +1,88 @@
+{% extends 'ceo_portal/base.html' %}
+
+{% block header %}
+    <a href="{% url 'ceo_sourcing_list' %}" class="text-[10px] text-gray-500 hover:text-ark-gold uppercase tracking-widest font-bold transition-colors mb-4 inline-block">&larr; Back to Desk</a>
+    <h2 class="text-6xl font-black italic tracking-tighter theme-text">{{ s_req.customer_name }}</h2>
+    <p class="text-xl font-mono text-ark-gold mt-2 font-bold tracking-[0.2em]">{{ s_req.tracking_code }}</p>
+{% endblock %}
+
+{% block header_actions %}
+    <a href="{% url 'ceo_sourcing_dossier_print' s_req.id %}" target="_blank" class="btn-gold flex items-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+        </svg>
+        Export PDF Dossier
+    </a>
+{% endblock %}
+
+{% block content %}
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <div class="lg:col-span-2 space-y-8">
+        <!-- Client Core -->
+        <div class="card space-y-6">
+            <h3 class="text-[10px] font-black tracking-[0.3em] uppercase text-gray-500 border-b border-white/10 pb-4">Client Profile & Parameters</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <p class="text-[8px] text-gray-600 font-black tracking-widest uppercase mb-1">Email</p>
+                    <p class="text-sm theme-text font-bold">{{ s_req.email }}</p>
+                </div>
+                <div>
+                    <p class="text-[8px] text-gray-600 font-black tracking-widest uppercase mb-1">Phone</p>
+                    <p class="text-sm theme-text font-bold">{{ s_req.phone }}</p>
+                </div>
+                <div class="md:col-span-2 pt-4 border-t border-white/5">
+                    <p class="text-[8px] text-gray-600 font-black tracking-widest uppercase mb-1">Target Asset</p>
+                    <p class="text-xl theme-text font-black uppercase tracking-widest">{{ s_req.asset_class }}</p>
+                </div>
+                <div>
+                    <p class="text-[8px] text-gray-600 font-black tracking-widest uppercase mb-1">Budget</p>
+                    <p class="text-sm theme-text font-mono">{{ s_req.budget }}</p>
+                </div>
+                <div>
+                    <p class="text-[8px] text-gray-600 font-black tracking-widest uppercase mb-1">Timeline</p>
+                    <p class="text-sm theme-text font-mono">{{ s_req.timeline }}</p>
+                </div>
+                {% if s_req.details %}
+                <div class="md:col-span-2 pt-4 border-t border-white/5">
+                    <p class="text-[8px] text-gray-600 font-black tracking-widest uppercase mb-2">Additional Specifications</p>
+                    <p class="text-sm text-gray-400 italic leading-relaxed">{{ s_req.details }}</p>
+                </div>
+                {% endif %}
+            </div>
+            <div class="pt-6 flex gap-4">
+                <a href="https://wa.me/{{ s_req.phone }}" target="_blank" class="px-6 py-3 bg-[#25D366]/10 text-[#25D366] border border-[#25D366]/30 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-[#25D366] hover:text-black transition-all">
+                    WhatsApp Client
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="space-y-8">
+        <!-- Status Updater -->
+        <div class="glass-panel p-6 border-t-4 border-ark-gold">
+            <h3 class="text-[10px] font-black tracking-[0.3em] uppercase text-ark-gold mb-6">Pipeline Control</h3>
+            <form method="POST" class="space-y-6">
+                {% csrf_token %}
+                <div class="space-y-2">
+                    <label class="text-[8px] text-gray-500 font-black tracking-widest uppercase">Acquisition Status</label>
+                    <select name="status" class="w-full bg-[var(--bg-primary)] border border-white/10 text-white rounded-xl py-3 px-4 outline-none focus:border-ark-gold text-xs font-bold uppercase tracking-widest">
+                        <option value="Received" {% if s_req.status == 'Received' %}selected{% endif %}>Received</option>
+                        <option value="Researching" {% if s_req.status == 'Researching' %}selected{% endif %}>Researching</option>
+                        <option value="Inspecting" {% if s_req.status == 'Inspecting' %}selected{% endif %}>Inspecting</option>
+                        <option value="Secured" {% if s_req.status == 'Secured' %}selected{% endif %}>Secured</option>
+                        <option value="Acquired" {% if s_req.status == 'Acquired' %}selected{% endif %}>Acquired</option>
+                        <option value="Cancelled" {% if s_req.status == 'Cancelled' %}selected{% endif %}>Cancelled</option>
+                    </select>
+                </div>
+                
+                <div class="space-y-2">
+                    <label class="text-[8px] text-gray-500 font-black tracking-widest uppercase">Broker Secure Notes (Visible to Client)</label>
+                    <textarea name="broker_notes" rows="4" class="w-full bg-[var(--bg-primary)] border border-white/10 text-white rounded-xl py-3 px-4 outline-none focus:border-ark-gold text-xs font-light resize-none">{{ s_req.broker_notes }}</textarea>
+                </div>
+
+                <button type="submit" class="w-full btn-gold !py-4">Update Tracker</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
