@@ -215,7 +215,7 @@ def process_bulk_uploads_background(temp_file_paths, category_id, file_names):
                     original_name = file_names[i]
                     
                     Product.objects.create(
-                        name=f"Asset {temp_sku[-6:]} - {original_name}",
+                        name=f"Classified Asset {temp_sku[-6:]}",
                         category=category,
                         description="Asset awaiting executive detailing.",
                         sku=temp_sku,
@@ -283,7 +283,10 @@ def edit_asset(request, pk):
         category_id = request.POST.get('category')
         new_category_name = request.POST.get('new_category')
         product.description = request.POST.get('description')
-        product.sku = request.POST.get('sku')
+        
+        new_sku = request.POST.get('sku')
+        if new_sku:
+            product.sku = new_sku
         
         if request.FILES.get('image'):
             product.image = request.FILES.get('image')

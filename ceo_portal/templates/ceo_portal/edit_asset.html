@@ -16,18 +16,11 @@
             {% csrf_token %}
             
             <!-- Asset Identity -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div class="space-y-3">
                     <label class="text-[9px] text-ark-gold font-black tracking-[0.3em] uppercase">Asset Designation</label>
                     <input type="text" name="name" required value="{{ product.name }}"
                            class="w-full bg-white/[0.03] border border-ark-border rounded-xl px-5 py-4 text-sm theme-text placeholder-gray-600 focus:border-ark-gold focus:ring-1 focus:ring-ark-gold transition-all outline-none">
                 </div>
-                <div class="space-y-3">
-                    <label class="text-[9px] text-ark-gold font-black tracking-[0.3em] uppercase">Identification SKU</label>
-                    <input type="text" name="sku" required value="{{ product.sku }}"
-                           class="w-full bg-white/[0.03] border border-ark-border rounded-xl px-5 py-4 text-sm theme-text placeholder-gray-600 focus:border-ark-gold focus:ring-1 focus:ring-ark-gold transition-all outline-none">
-                </div>
-            </div>
 
             <!-- Category & Storage -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
