@@ -155,6 +155,9 @@ STORAGES = {
     },
 }
 
+# Prevent missing sourcemaps (e.g., chart.umd.js.map) from crashing collectstatic on Render
+WHITENOISE_MANIFEST_STRICT = False
+
 # Media files
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
