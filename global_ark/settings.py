@@ -204,3 +204,24 @@ if not DEBUG:
     STORAGES["default"]["BACKEND"] = "cloudinary_storage.storage.MediaCloudinaryStorage"
     # Cloudinary automatically reads credentials from the CLOUDINARY_URL environment variable.
     # Format: CLOUDINARY_URL=cloudinary://<api_key>:<api_secret>@<cloud_name>
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'WARNING',
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+    },
+}
