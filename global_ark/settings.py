@@ -202,8 +202,13 @@ if not DEBUG:
 # Cloudinary Media Storage Configuration
 if not DEBUG:
     STORAGES["default"]["BACKEND"] = "cloudinary_storage.storage.MediaCloudinaryStorage"
-    # Cloudinary automatically reads credentials from the CLOUDINARY_URL environment variable.
-    # Format: CLOUDINARY_URL=cloudinary://<api_key>:<api_secret>@<cloud_name>
+    
+    # Explicitly define Cloudinary settings so it works even if Render Env Vars are misconfigured
+    CLOUDINARY_STORAGE = {
+        'CLOUD_NAME': os.getenv('CLOUDINARY_CLOUD_NAME', 'doezvrej5'),
+        'API_KEY': os.getenv('CLOUDINARY_API_KEY', '929979217828284'),
+        'API_SECRET': os.getenv('CLOUDINARY_API_SECRET', 'Zgd17qrkl9PtnD6415510651770'),
+    }
 
 LOGGING = {
     'version': 1,
