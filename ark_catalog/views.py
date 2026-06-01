@@ -42,8 +42,14 @@ class FleetManagementView(ListView):
     context_object_name = 'fleet_cars'
 
     def get_queryset(self):
-        # We query by category name 'Cars' dynamically based on our schema
-        return Product.objects.filter(category__name__icontains='Cars', is_available=True)
+        from django.db.models import Q
+        # We query by category name dynamically, matching common names for the fleet
+        return Product.objects.filter(
+            Q(category__name__icontains='Car') | 
+            Q(category__name__icontains='Fleet') | 
+            Q(category__name__icontains='Vehicle'),
+            is_available=True
+        )
 
 class ToggleSelectionView(View):
     def post(self, request, product_id):
