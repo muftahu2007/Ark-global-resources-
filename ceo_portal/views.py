@@ -198,36 +198,10 @@ def add_asset(request):
     return render(request, 'ceo_portal/add_asset.html', {'categories': categories})
 
 import uuid
-import threading
 import os
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 from django.core.files import File
-
-def process_bulk_uploads_background(temp_file_paths, category_id, file_names):
-    """Background worker to process images sequentially without blocking the UI."""
-    try:
-        category = Category.objects.get(id=category_id)
-        for i, file_path in enumerate(temp_file_paths):
-            if os.path.exists(file_path):
-                with open(file_path, 'rb') as f:
-                    temp_sku = f"ARK-AUTO-{uuid.uuid4().hex[:8].upper()}"
-                    original_name = file_names[i]
-                    
-                    Product.objects.create(
-                        name=f"Classified Asset {temp_sku[-6:]}",
-                        category=category,
-                        description="Asset awaiting executive detailing.",
-                        sku=temp_sku,
-                        image=File(f, name=original_name),
-                        is_available=False  # Saved as Archived by default
-                    )
-                # Cleanup temporary raw file
-                os.remove(file_path)
-    except Exception as e:
-        # In a production environment, you would log this error.
-        print(f"Background Upload Error: {e}")
-
 
 @login_required
 @user_passes_test(is_ceo, login_url='ceo_login')
@@ -244,29 +218,27 @@ def bulk_add_assets(request):
             category = get_object_or_404(Category, id=category_id)
 
         if category and images:
-            # Prepare Temporary Storage for Background Processing
-            temp_dir = os.path.join(settings.MEDIA_ROOT, 'temp_uploads')
-            os.makedirs(temp_dir, exist_ok=True)
-            fs = FileSystemStorage(location=temp_dir)
-            
-            temp_file_paths = []
-            file_names = []
-            
-            # Save raw files instantly to disk
+            success_count = 0
             for image in images:
-                filename = fs.save(image.name, image)
-                temp_file_paths.append(fs.path(filename))
-                file_names.append(image.name)
-            
-            # Dispatch Background Worker
-            thread = threading.Thread(
-                target=process_bulk_uploads_background,
-                args=(temp_file_paths, category.id, file_names)
-            )
-            thread.daemon = True
-            thread.start()
-            
-            messages.success(request, f"Mass Deployment Initiated: {len(images)} assets are securely processing in the background.")
+                try:
+                    temp_sku = f"ARK-AUTO-{uuid.uuid4().hex[:8].upper()}"
+                    Product.objects.create(
+                        name=f"Classified Asset {temp_sku[-6:]}",
+                        category=category,
+                        description="Asset awaiting executive detailing.",
+                        sku=temp_sku,
+                        image=image,
+                        is_available=False  # Saved as Archived by default
+                    )
+                    success_count += 1
+                except Exception as e:
+                    print(f"Error processing upload for {image.name}: {e}")
+                    
+            if success_count > 0:
+                messages.success(request, f"Mass Deployment Complete: {success_count} assets securely added to The Vault.")
+            else:
+                messages.error(request, "Deployment failed: No assets could be processed.")
+                
             return redirect('ceo_inventory_category', category_slug=category.slug)
         else:
             messages.error(request, "Deployment failed. Missing: Vault Directory or Media Attachments.")
