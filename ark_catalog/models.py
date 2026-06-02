@@ -11,6 +11,7 @@ ImageFile.LOAD_TRUNCATED_IMAGES = True
 class Category(models.Model):
     name = models.CharField(max_length=100, unique=True)
     slug = models.SlugField(max_length=120, unique=True, blank=True)
+    poster_image = models.ImageField(upload_to='categories/', blank=True, null=True, help_text='Optional: Pin a custom poster image to this category card on the main portal page.')
 
     def save(self, *args, **kwargs):
         if not self.slug:

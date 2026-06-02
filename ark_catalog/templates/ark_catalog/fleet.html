@@ -4,13 +4,14 @@
 {% block title %}Fleet Management | Global Ark Resources{% endblock %}
 
 {% block content %}
+<!-- Clean Page Header -->
 <div class="theme-bg-secondary py-24 px-6">
     <div class="max-w-6xl mx-auto flex justify-between items-end">
         <div>
             <h2 class="text-gold uppercase tracking-[0.6em] text-[10px] font-bold mb-4">02. Elite Service</h2>
-            <h1 class="brand-font text-7xl font-bold tracking-tighter italic theme-text">FLEET <span class="gold-text-gradient">MANAGEMENT</span></h1>
+            <h1 class="brand-font text-7xl font-bold tracking-tighter italic theme-text">THE <span class="gold-text-gradient">VAULT</span> OF FLEETS</h1>
             <p class="theme-text-muted font-light text-sm md:text-lg tracking-widest uppercase max-w-2xl mt-6 leading-relaxed">
-                Comprehensive acquisition, maintenance, and logistical oversight for ultra-luxury automotive and maritime fleets. We handle the complexities; you enjoy the drive.
+                Comprehensive acquisition, maintenance, and logistical oversight for ultra-luxury automotive fleets.
             </p>
         </div>
         <a href="{% url 'catalog' %}" class="text-[10px] uppercase tracking-widest theme-text-muted hover:text-white transition-colors pb-2 border-b border-white/10">Return to Portals</a>
@@ -19,6 +20,7 @@
 
 <div class="max-w-7xl mx-auto px-6 py-24 theme-bg">
     <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-24">
+
         {% for product in fleet_cars %}
         <div class="group relative animate-fadeInUp transition-all duration-500 hover:-translate-y-6 hover:z-50 active:scale-[0.98] cursor-pointer">
             <div class="relative aspect-[16/10] overflow-hidden rounded-3xl theme-card shadow-2xl group-hover:shadow-[0_40px_80px_rgba(212,175,55,0.2)] transition-all duration-700">

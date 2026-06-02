@@ -5,59 +5,87 @@
 {% block title %}Excellence Portals | Global Ark Resources{% endblock %}
 
 {% block content %}
-<!-- Premium Cinematic Hero Section -->
+<!-- Cinematic Logo-First Hero -->
 <div class="relative min-h-screen flex items-center justify-center overflow-hidden theme-bg -mt-20 pt-20">
-    <!-- Dynamic Background Mesh -->
-    {% static 'images/carbon-fibre.png' as carbon_bg %}
-    <div class="absolute inset-0 z-0 opacity-20" style="background-image: url('{{ carbon_bg }}'); background-size: 256px; mix-blend-mode: overlay;"></div>
-    
-    <!-- Animated Light Orbs -->
-    <div class="absolute top-0 right-0 w-[40rem] h-[40rem] bg-gold opacity-10 rounded-full blur-[150px] animate-pulse-slow"></div>
-    <div class="absolute bottom-0 left-0 w-[40rem] h-[40rem] bg-gold opacity-10 rounded-full blur-[150px] animate-pulse-slow" style="animation-delay: 2s;"></div>
 
-    <div class="absolute inset-0 z-10 bg-gradient-to-b from-transparent via-[var(--bg-primary)]/80 to-[var(--bg-primary)]"></div>
-    
-    <div class="relative z-20 text-center px-6 max-w-6xl mx-auto flex flex-col items-center justify-center mt-[-5vh]">
-        
-        <!-- Glowing Badge -->
-        <div class="inline-flex items-center space-x-2 glass px-4 py-2 rounded-full mb-8 animate-fadeInUp" style="animation-delay: 100ms;">
-            <span class="w-2 h-2 rounded-full bg-gold animate-pulse"></span>
-            <span class="text-[9px] text-gold font-black tracking-[0.4em] uppercase">Excellence Unveiled</span>
+    <!-- Background carbon texture -->
+    {% static 'images/carbon-fibre.png' as carbon_bg %}
+    <div class="absolute inset-0 z-0 opacity-10" style="background-image: url('{{ carbon_bg }}'); background-size: 256px;"></div>
+
+    <!-- Deep ambient gold glow — large, soft, centred behind logo -->
+    <div class="absolute inset-0 z-0 flex items-center justify-center pointer-events-none">
+        <div class="w-[60vw] h-[60vw] max-w-[800px] max-h-[800px] rounded-full bg-gold opacity-[0.07] blur-[120px] animate-pulse-slow"></div>
+    </div>
+
+    <!-- Subtle top/bottom fade to background -->
+    <div class="absolute inset-0 z-10 bg-gradient-to-b from-[var(--bg-primary)] via-transparent to-[var(--bg-primary)] pointer-events-none"></div>
+
+    <!-- HERO CONTENT -->
+    <div class="relative z-20 flex flex-col items-center justify-center text-center px-6 w-full">
+
+        <!-- === THE LOGO — main focal point === -->
+        <div class="relative flex items-center justify-center animate-fadeInUp" style="animation-delay: 50ms;">
+
+            <!-- Soft breathing outer halo — expands slowly and fades, never jarring -->
+            <div class="absolute w-[260px] h-[260px] md:w-[370px] md:h-[370px] rounded-full"
+                 style="background: radial-gradient(circle, rgba(212,175,55,0.18) 0%, transparent 70%); animation: ark-breathe 4s ease-in-out infinite;"></div>
+
+            <!-- Second halo layer offset in phase — gives depth -->
+            <div class="absolute w-[230px] h-[230px] md:w-[340px] md:h-[340px] rounded-full"
+                 style="background: radial-gradient(circle, rgba(212,175,55,0.10) 0%, transparent 65%); animation: ark-breathe 4s ease-in-out infinite; animation-delay: 2s;"></div>
+
+            <!-- Clean single gold border ring — solid, elegant, no spin -->
+            <div class="absolute w-[220px] h-[220px] md:w-[320px] md:h-[320px] rounded-full border-2 border-gold/60"
+                 style="box-shadow: 0 0 30px rgba(212,175,55,0.3), inset 0 0 20px rgba(212,175,55,0.08);"></div>
+
+            <!-- Four small gold diamond accents at N/E/S/W (luxury jewellery effect) -->
+            <div class="absolute w-[220px] h-[220px] md:w-[320px] md:h-[320px] rounded-full" style="animation: ark-breathe 4s ease-in-out infinite; animation-delay: 1s;">
+                <span class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 bg-gold rounded-full shadow-[0_0_8px_rgba(212,175,55,0.9)]"></span>
+                <span class="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 w-2 h-2 bg-gold rounded-full shadow-[0_0_8px_rgba(212,175,55,0.9)]"></span>
+                <span class="absolute left-0 top-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 bg-gold rounded-full shadow-[0_0_8px_rgba(212,175,55,0.9)]"></span>
+                <span class="absolute right-0 top-1/2 translate-x-1/2 -translate-y-1/2 w-2 h-2 bg-gold rounded-full shadow-[0_0_8px_rgba(212,175,55,0.9)]"></span>
+            </div>
+
+            <!-- The Logo Image itself — LARGE and dominant -->
+            <div class="w-[200px] h-[200px] md:w-[300px] md:h-[300px] rounded-full overflow-hidden bg-black shadow-[0_0_60px_rgba(212,175,55,0.35)] group cursor-default relative z-10">
+                <img src="{% static 'images/logo.jpg' %}"
+                     alt="Global Ark Resources"
+                     class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110 group-hover:brightness-110">
+                <!-- Subtle inner shimmer sweep on hover -->
+                <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700"
+                     style="background: linear-gradient(135deg, transparent 40%, rgba(212,175,55,0.15) 50%, transparent 60%);"></div>
+            </div>
+
+            <!-- Keyframe definitions -->
+            <style>
+                @keyframes ark-breathe {
+                    0%, 100% { transform: scale(1); opacity: 0.8; }
+                    50% { transform: scale(1.06); opacity: 1; }
+                }
+            </style>
         </div>
 
-        <h1 class="brand-font text-7xl md:text-[8rem] lg:text-[11rem] font-black tracking-tighter mb-8 leading-[0.85] animate-fadeInUp relative" style="animation-delay: 200ms;">
-            <span class="gold-text-gradient block drop-shadow-2xl">GLOBAL</span> 
-            <span style="color: var(--text-primary); text-shadow: 0 0 40px rgba(255,255,255,0.1);">ARK</span>
-        </h1>
-        
-        <p class="theme-text-muted font-light text-sm md:text-xl tracking-[0.2em] uppercase max-w-3xl mx-auto leading-relaxed animate-fadeInUp" style="animation-delay: 300ms;">
-            The exclusive gateway to unparalleled luxury assets, elite fleet management, and discrete private sourcing.
-        </p>
+        <!-- Brand name — clean, refined, secondary to logo -->
+        <div class="mt-12 animate-fadeInUp" style="animation-delay: 300ms;">
+            <p class="text-[10px] text-gold uppercase tracking-[0.5em] font-bold mb-3">Est. Global Luxury Acquisitions</p>
+            <h1 class="brand-font text-4xl md:text-6xl font-black tracking-tight text-white uppercase">
+                Global Ark <span class="gold-text-gradient">Resources</span>
+            </h1>
+            <p class="text-gray-400 font-light text-sm tracking-[0.3em] uppercase mt-3">
+                Premium Assets · Private Sourcing · Elite Fleet
+            </p>
+        </div>
 
-        <!-- Interactive Action Area -->
-        <div class="mt-12 flex flex-col sm:flex-row items-center justify-center gap-6 animate-fadeInUp" style="animation-delay: 400ms;">
-            <button onclick="window.scrollBy({top: window.innerHeight - 100, behavior: 'smooth'})" class="relative group overflow-hidden gold-gradient px-12 py-5 rounded-full text-black text-xs font-black uppercase tracking-[0.3em] hover:scale-105 transition-all shadow-[0_0_40px_rgba(212,175,55,0.3)] hover:shadow-[0_0_60px_rgba(212,175,55,0.5)]">
-                <span class="relative z-10 flex items-center gap-3">
-                    Enter The Vault
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
-                </span>
+        <!-- Action buttons -->
+        <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4 animate-fadeInUp" style="animation-delay: 450ms;">
+            <button onclick="window.scrollBy({top: window.innerHeight - 100, behavior: 'smooth'})"
+                    class="gold-gradient px-10 py-4 rounded-full text-black text-xs font-black uppercase tracking-[0.25em] hover:scale-105 transition-all shadow-[0_0_40px_rgba(212,175,55,0.35)] hover:shadow-[0_0_60px_rgba(212,175,55,0.55)]">
+                Enter The Vault
             </button>
-            
-            <a href="{% url 'private_sourcing' %}" class="glass px-10 py-5 rounded-full text-xs font-black uppercase tracking-[0.3em] theme-text hover:bg-white/5 border border-white/10 hover:border-gold/50 transition-all">
+            <a href="{% url 'private_sourcing' %}"
+               class="border border-gold/30 px-10 py-4 rounded-full text-gold text-xs font-bold uppercase tracking-[0.25em] hover:bg-gold/10 hover:border-gold transition-all">
                 Private Sourcing
             </a>
-        </div>
-
-        <!-- Floating Stats Glass Panel -->
-        <div class="hidden lg:flex absolute -right-12 top-1/2 transform -translate-y-1/2 flex-col gap-4 animate-fadeInUp" style="animation-delay: 600ms;">
-            <div class="glass p-6 rounded-2xl border-r-4 border-r-gold w-48 text-left backdrop-blur-xl hover:-translate-y-2 transition-transform cursor-default shadow-2xl">
-                <p class="text-3xl font-black theme-text brand-font mb-1">Exclusive</p>
-                <p class="text-[8px] uppercase tracking-widest text-gold">Asset Collection</p>
-            </div>
-            <div class="glass p-6 rounded-2xl border-r-4 border-r-gold w-48 text-left backdrop-blur-xl hover:-translate-y-2 transition-transform cursor-default shadow-2xl">
-                <p class="text-3xl font-black theme-text brand-font mb-1">Global</p>
-                <p class="text-[8px] uppercase tracking-widest text-gold">Secure Reach</p>
-            </div>
         </div>
     </div>
 </div>
@@ -66,15 +94,21 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
         {% for cat in categories %}
         <div class="group relative h-[500px] overflow-hidden theme-card shadow-2xl animate-fadeInUp">
-            {% with first_product=cat.products.first %}
-                {% if first_product and first_product.image %}
-                    <img src="{{ first_product.image.url }}" class="w-full h-full object-cover grayscale-[30%] group-hover:grayscale-0 transition-all duration-1000 group-hover:scale-105">
-                {% else %}
-                    <div class="w-full h-full bg-ark-card flex items-center justify-center">
-                        <span class="text-ark-gold opacity-20 text-9xl font-brand italic">{{ cat.name|first }}</span>
-                    </div>
-                {% endif %}
-            {% endwith %}
+            {% if cat.slug == 'cars' %}
+                <img src="{% static 'images/fleet_poster.png' %}" class="w-full h-full object-cover grayscale-[30%] group-hover:grayscale-0 transition-all duration-1000 group-hover:scale-105" alt="Cars Collection">
+            {% elif cat.poster_image %}
+                <img src="{{ cat.poster_image.url }}" class="w-full h-full object-cover grayscale-[30%] group-hover:grayscale-0 transition-all duration-1000 group-hover:scale-105">
+            {% else %}
+                {% with first_product=cat.products.first %}
+                    {% if first_product and first_product.image %}
+                        <img src="{{ first_product.image.url }}" class="w-full h-full object-cover grayscale-[30%] group-hover:grayscale-0 transition-all duration-1000 group-hover:scale-105">
+                    {% else %}
+                        <div class="w-full h-full bg-ark-card flex items-center justify-center">
+                            <span class="text-ark-gold opacity-20 text-9xl font-brand italic">{{ cat.name|first }}</span>
+                        </div>
+                    {% endif %}
+                {% endwith %}
+            {% endif %}
             <div class="absolute inset-0 bg-gradient-to-t from-[var(--bg-primary)] via-[var(--bg-primary)]/20 to-transparent"></div>
             <div class="absolute bottom-0 left-0 p-12 w-full">
                 <h3 class="brand-font text-5xl font-bold italic theme-text mb-4">{{ cat.name }}</h3>
