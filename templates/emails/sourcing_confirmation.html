@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Global Ark Resources - Sourcing Request Received</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #050505; color: #ffffff; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased;">
+    
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #050505; width: 100%; margin: 0; padding: 40px 0;">
+        <tr>
+            <td align="center">
+                <!-- Main Email Container -->
+                <table width="600" cellpadding="0" cellspacing="0" border="0" style="background-color: #0a0a0a; border: 1px solid #1a1a1a; max-width: 600px; width: 100%; margin: 0 auto;">
+                    
+                    <!-- Header -->
+                    <tr>
+                        <td align="center" style="padding: 40px 0; border-bottom: 1px solid rgba(212, 175, 55, 0.2);">
+                            <!-- Using a high-quality stylized text logo since email clients often block images by default -->
+                            <h1 style="margin: 0; font-family: 'Times New Roman', Times, serif; font-size: 24px; font-weight: normal; letter-spacing: 4px; color: #ffffff; text-transform: uppercase;">
+                                Global Ark
+                            </h1>
+                            <p style="margin: 5px 0 0 0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 9px; letter-spacing: 6px; color: #d4af37; text-transform: uppercase;">
+                                Resources Ltd
+                            </p>
+                        </td>
+                    </tr>
+
+                    <!-- Body Content -->
+                    <tr>
+                        <td style="padding: 40px 40px 20px 40px;">
+                            <h2 style="margin: 0 0 20px 0; font-family: 'Times New Roman', Times, serif; font-size: 20px; font-weight: normal; color: #d4af37; letter-spacing: 1px;">
+                                Dear {{ name }},
+                            </h2>
+                            <p style="margin: 0 0 20px 0; font-size: 14px; line-height: 1.6; color: #b3b3b3; font-weight: 300;">
+                                Thank you for choosing Global Ark Resources. We have successfully received your private sourcing request. A dedicated concierge is currently reviewing your dossier and will reach out to you shortly to initiate the consultation phase.
+                            </p>
+                            <p style="margin: 0 0 30px 0; font-size: 14px; line-height: 1.6; color: #b3b3b3; font-weight: 300;">
+                                Please find a summary of your requested specifications below:
+                            </p>
+
+                            <!-- Request Summary Box -->
+                            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #111111; border-left: 2px solid #d4af37; padding: 20px; margin-bottom: 30px;">
+                                <tr>
+                                    <td style="padding-bottom: 10px;">
+                                        <span style="font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: #666666;">Tracking Code</span><br>
+                                        <span style="font-size: 14px; color: #ffffff; font-family: monospace;">{{ tracking_code }}</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding-bottom: 10px;">
+                                        <span style="font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: #666666;">Asset Class</span><br>
+                                        <span style="font-size: 14px; color: #ffffff;">{{ asset_type }}</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding-bottom: 10px;">
+                                        <span style="font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: #666666;">Budget Allocation</span><br>
+                                        <span style="font-size: 14px; color: #d4af37;">{{ budget }}</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding-bottom: 10px;">
+                                        <span style="font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: #666666;">Acquisition Timeline</span><br>
+                                        <span style="font-size: 14px; color: #ffffff;">{{ timeline }}</span>
+                                    </td>
+                                </tr>
+                                {% if details %}
+                                <tr>
+                                    <td>
+                                        <span style="font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: #666666;">Additional Directives</span><br>
+                                        <span style="font-size: 13px; color: #999999; line-height: 1.5; font-style: italic;">"{{ details }}"</span>
+                                    </td>
+                                </tr>
+                                {% endif %}
+                            </table>
+
+                            <p style="margin: 0 0 20px 0; font-size: 14px; line-height: 1.6; color: #b3b3b3; font-weight: 300;">
+                                We assure you of our absolute discretion and look forward to fulfilling your requirements with the utmost excellence.
+                            </p>
+                            <p style="margin: 0; font-size: 14px; line-height: 1.6; color: #d4af37; font-family: 'Times New Roman', Times, serif; font-style: italic;">
+                                Sincerely,<br>
+                                The Executive Concierge Team
+                            </p>
+                        </td>
+                    </tr>
+
+                    <!-- Footer -->
+                    <tr>
+                        <td align="center" style="padding: 30px 40px; background-color: #050505; border-top: 1px solid #1a1a1a;">
+                            <p style="margin: 0 0 10px 0; font-size: 10px; letter-spacing: 2px; color: #666666; text-transform: uppercase;">
+                                Excellence • Discretion • Acquisition
+                            </p>
+                            <p style="margin: 0; font-size: 10px; color: #444444;">
+                                &copy; {% now "Y" %} Global Ark Resources Ltd. All Rights Reserved.<br>
+                                This communication is strictly confidential and intended solely for the recipient.
+                            </p>
+                        </td>
+                    </tr>
+
+                </table>
+            </td>
+        </tr>
+    </table>
+
+</body>
+</html>

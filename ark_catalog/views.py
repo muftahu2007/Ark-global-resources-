@@ -3,7 +3,8 @@ from django.views.generic import ListView, DetailView, View, TemplateView
 from django.http import JsonResponse
 from django.contrib import messages
 from django.urls import reverse
-from django.core.mail import send_mail
+from django.core.mail import send_mail, EmailMultiAlternatives
+from django.template.loader import render_to_string
 from django.conf import settings
 from .models import Product, Inquiry, Category, SourcingRequest
 import urllib.parse
@@ -237,6 +238,52 @@ class PrivateSourcingView(View):
             asset_class=asset_type, budget=budget, timeline=timeline, details=details
         )
         t_code = sourcing_request.tracking_code
+
+        # --- SEND LUXURY HTML CONFIRMATION EMAIL TO CLIENT ---
+        if email:
+            try:
+                client_subject = f"Sourcing Request Received - Ref: {t_code} | Global Ark Resources"
+                
+                # Context for the email
+                context = {
+                    'name': name,
+                    'tracking_code': t_code,
+                    'asset_type': asset_type,
+                    'budget': budget,
+                    'timeline': timeline,
+                    'details': details,
+                }
+                
+                # Render HTML and plain text versions
+                html_content = render_to_string('emails/sourcing_confirmation.html', context)
+                text_content = f"""Dear {name},
+
+Thank you for choosing Global Ark Resources. We have successfully received your private sourcing request. A dedicated concierge is currently reviewing your dossier and will reach out to you shortly.
+
+Request Summary:
+Tracking Code: {t_code}
+Asset Class: {asset_type}
+Budget: {budget}
+Timeline: {timeline}
+Additional Directives: {details}
+
+Sincerely,
+The Executive Concierge Team
+Global Ark Resources Ltd."""
+                
+                msg = EmailMultiAlternatives(
+                    client_subject,
+                    text_content,
+                    settings.DEFAULT_FROM_EMAIL,
+                    [email]
+                )
+                msg.attach_alternative(html_content, "text/html")
+                msg.send(fail_silently=True)
+            except Exception as e:
+                # We fail silently for the client email so it doesn't break the submission flow
+                pass
+
+        # --- SEND NOTIFICATION TO EXECUTIVE ---
 
         if method == 'email':
             subject = f"🏛️ NEW PRIVATE SOURCING: {name} [{t_code}]"
