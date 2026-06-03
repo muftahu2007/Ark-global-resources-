@@ -14,17 +14,17 @@
 
         <form method="POST" enctype="multipart/form-data" class="space-y-10 relative z-10">
             {% csrf_token %}
-            
+
             <!-- Asset Identity -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div class="space-y-3">
                     <label class="text-[9px] text-ark-gold font-black tracking-[0.3em] uppercase">Asset Designation</label>
-                    <input type="text" name="name" required placeholder="e.g. Mercedes-Benz S-Class" 
+                    <input type="text" name="name" required placeholder="e.g. Mercedes-Benz S-Class"
                            class="w-full bg-white/[0.03] border border-ark-border rounded-xl px-5 py-4 text-sm theme-text placeholder-gray-600 focus:border-ark-gold focus:ring-1 focus:ring-ark-gold transition-all outline-none">
                 </div>
                 <div class="space-y-3">
                     <label class="text-[9px] text-ark-gold font-black tracking-[0.3em] uppercase">Identification SKU</label>
-                    <input type="text" name="sku" required placeholder="ARK-VLT-001" 
+                    <input type="text" name="sku" required placeholder="ARK-VLT-001"
                            class="w-full bg-white/[0.03] border border-ark-border rounded-xl px-5 py-4 text-sm theme-text placeholder-gray-600 focus:border-ark-gold focus:ring-1 focus:ring-ark-gold transition-all outline-none">
                 </div>
             </div>
@@ -40,22 +40,68 @@
                             <option value="{{ cat.id }}">{{ cat.name }}</option>
                         {% endfor %}
                     </select>
-                    <input type="text" name="new_category" id="newCategoryInput" placeholder="Enter New Category Name" 
+                    <input type="text" name="new_category" id="newCategoryInput" placeholder="Enter New Category Name"
                            class="w-full bg-white/[0.03] border border-ark-border rounded-xl px-5 py-4 text-sm theme-text placeholder-gray-600 focus:border-ark-gold focus:ring-1 focus:ring-ark-gold transition-all outline-none mt-4 hidden">
                     <button type="button" onclick="toggleNewCategory()" id="toggleBtn" class="text-[9px] text-ark-gold font-black tracking-widest uppercase opacity-60 hover:opacity-100 transition-all">+ Add New Category</button>
                 </div>
                 <div class="space-y-3">
                     <label class="text-[9px] text-ark-gold font-black tracking-[0.3em] uppercase">Media Attachment</label>
                     <div class="relative group">
-                        <input type="file" name="image" required 
-                               class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20">
-                        <div class="w-full bg-white/[0.03] border-2 border-dashed border-ark-border rounded-xl px-5 py-4 text-sm text-gray-500 group-hover:border-ark-gold transition-all flex items-center justify-between">
-                            <span>Select High-Res Image</span>
+                        <input type="file" name="image" required
+                               class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20" id="imageInput">
+                        <div id="imageDropZone" class="w-full bg-white/[0.03] border-2 border-dashed border-ark-border rounded-xl px-5 py-4 text-sm text-gray-500 group-hover:border-ark-gold transition-all flex items-center justify-between">
+                            <span id="imageLabel">Select High-Res Image</span>
                             <span class="text-ark-gold">📁</span>
                         </div>
                     </div>
                 </div>
             </div>
+
+            <!-- ── PRICE TAG SECTION ── -->
+            <div class="relative">
+                <div class="absolute -top-3 left-6 bg-ark-card px-3">
+                    <span class="text-[9px] text-ark-gold font-black tracking-[0.3em] uppercase flex items-center gap-2">
+                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M21.41 11.58l-9-9C12.05 2.22 11.55 2 11 2H4c-1.1 0-2 .9-2 2v7c0 .55.22 1.05.59 1.42l9 9c.36.36.86.58 1.41.58.55 0 1.05-.22 1.41-.59l7-7c.37-.36.59-.86.59-1.41 0-.55-.23-1.06-.59-1.42zM5.5 7C4.67 7 4 6.33 4 5.5S4.67 4 5.5 4 7 4.67 7 5.5 6.33 7 5.5 7z"/></svg>
+                        Price Tag (NGN)
+                    </span>
+                </div>
+                <div class="border border-ark-border/50 rounded-2xl p-8 pt-6 bg-white/[0.01]">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+                        <!-- Price input -->
+                        <div class="space-y-3">
+                            <label class="text-[9px] text-gray-500 font-bold tracking-widest uppercase">Quoted Price (₦ Naira)</label>
+                            <div class="relative">
+                                <span class="absolute left-5 top-1/2 -translate-y-1/2 text-ark-gold font-black text-lg select-none">₦</span>
+                                <input type="text" name="price" id="priceInput"
+                                       placeholder="e.g. 5000"
+                                       class="w-full bg-white/[0.03] border border-ark-border rounded-xl pl-10 pr-5 py-4 text-sm theme-text placeholder-gray-600 focus:border-ark-gold focus:ring-1 focus:ring-ark-gold transition-all outline-none font-mono tracking-wider">
+                            </div>
+                            <p class="text-[9px] text-gray-600 italic">Leave blank to hide pricing on the portal.</p>
+                        </div>
+                        <!-- Unit dropdown -->
+                        <div class="space-y-3">
+                            <label class="text-[9px] text-gray-500 font-bold tracking-widest uppercase">Unit of Measurement</label>
+                            <select name="price_unit"
+                                    class="w-full bg-ark-card border border-ark-border rounded-xl px-5 py-4 text-sm theme-text focus:border-ark-gold outline-none">
+                                {% for value, label in price_unit_choices %}
+                                    <option value="{{ value }}">{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <!-- Live Preview -->
+                    <div id="pricePreview" class="hidden mt-6 flex items-center gap-4 p-4 bg-ark-gold/5 border border-ark-gold/20 rounded-xl">
+                        <div class="w-8 h-8 rounded-full bg-ark-gold/10 flex items-center justify-center">
+                            <svg class="w-4 h-4 text-ark-gold" fill="currentColor" viewBox="0 0 24 24"><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/></svg>
+                        </div>
+                        <div>
+                            <p class="text-[9px] text-ark-gold font-black tracking-widest uppercase mb-0.5">Price Preview</p>
+                            <p id="pricePreviewText" class="text-sm font-bold theme-text font-mono"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- ── END PRICE TAG SECTION ── -->
 
             <!-- Detailed Analysis -->
             <div class="space-y-3">
@@ -78,11 +124,11 @@
 
 {% block scripts %}
 <script>
+    // Category toggle
     function toggleNewCategory() {
         const select = document.getElementById('categorySelect');
         const input = document.getElementById('newCategoryInput');
         const btn = document.getElementById('toggleBtn');
-        
         if (input.classList.contains('hidden')) {
             input.classList.remove('hidden');
             select.classList.add('hidden');
@@ -97,5 +143,33 @@
             btn.innerText = "+ Add New Category";
         }
     }
+
+    // Image label
+    document.getElementById('imageInput').addEventListener('change', function () {
+        const label = document.getElementById('imageLabel');
+        label.innerText = this.files.length > 0 ? this.files[0].name : 'Select High-Res Image';
+    });
+
+    // Live price preview
+    const priceInput = document.getElementById('priceInput');
+    const priceUnitSelect = document.querySelector('select[name="price_unit"]');
+    const pricePreview = document.getElementById('pricePreview');
+    const pricePreviewText = document.getElementById('pricePreviewText');
+
+    function updatePreview() {
+        const raw = priceInput.value.replace(/[₦,#\s]/g, '');
+        const num = parseFloat(raw);
+        const unit = priceUnitSelect.options[priceUnitSelect.selectedIndex].text;
+        if (!isNaN(num) && num > 0) {
+            const formatted = '₦' + num.toLocaleString('en-NG', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            pricePreviewText.innerText = `${formatted}  /  ${unit}`;
+            pricePreview.classList.remove('hidden');
+        } else {
+            pricePreview.classList.add('hidden');
+        }
+    }
+
+    priceInput.addEventListener('input', updatePreview);
+    priceUnitSelect.addEventListener('change', updatePreview);
 </script>
 {% endblock %}

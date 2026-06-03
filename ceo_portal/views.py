@@ -169,7 +169,17 @@ def add_asset(request):
         description = request.POST.get('description')
         sku = request.POST.get('sku')
         image = request.FILES.get('image')
-        
+        price_raw = request.POST.get('price', '').strip()
+        price_unit = request.POST.get('price_unit', 'per piece')
+
+        # Sanitise price – strip currency symbols / commas
+        price = None
+        if price_raw:
+            try:
+                price = float(price_raw.replace('₦', '').replace(',', '').replace('#', ''))
+            except ValueError:
+                price = None
+
         category = None
         if new_category_name and new_category_name.strip():
             category, _ = Category.objects.get_or_create(name=new_category_name.strip())
@@ -182,7 +192,9 @@ def add_asset(request):
                 category=category,
                 description=description,
                 sku=sku,
-                image=image
+                image=image,
+                price=price,
+                price_unit=price_unit,
             )
             messages.success(request, f"Asset '{name}' successfully secured in the {category.name} Vault.")
             return redirect('ceo_inventory_category', category_slug=category.slug)
@@ -193,9 +205,13 @@ def add_asset(request):
             if not sku: missing.append("SKU")
             if not image: missing.append("Media Attachment")
             messages.error(request, f"Deployment failed. Missing: {', '.join(missing)}")
-    
+
     categories = Category.objects.all().order_by('name')
-    return render(request, 'ceo_portal/add_asset.html', {'categories': categories})
+    price_unit_choices = Product.PRICE_UNIT_CHOICES
+    return render(request, 'ceo_portal/add_asset.html', {
+        'categories': categories,
+        'price_unit_choices': price_unit_choices,
+    })
 
 import uuid
 import os
@@ -255,28 +271,42 @@ def edit_asset(request, pk):
         category_id = request.POST.get('category')
         new_category_name = request.POST.get('new_category')
         product.description = request.POST.get('description')
-        
+
         new_sku = request.POST.get('sku')
         if new_sku:
             product.sku = new_sku
-        
+
+        # Price handling
+        price_raw = request.POST.get('price', '').strip()
+        price_unit = request.POST.get('price_unit', 'per piece')
+        if price_raw:
+            try:
+                product.price = float(price_raw.replace('₦', '').replace(',', '').replace('#', ''))
+            except ValueError:
+                product.price = None
+        else:
+            product.price = None
+        product.price_unit = price_unit
+
         if request.FILES.get('image'):
             product.image = request.FILES.get('image')
-            
+
         if new_category_name:
             category, _ = Category.objects.get_or_create(name=new_category_name)
             product.category = category
         elif category_id:
             product.category = get_object_or_404(Category, id=category_id)
-            
+
         product.save()
         messages.success(request, f"Asset '{product.name}' updated.")
         return redirect('ceo_inventory_category', category_slug=product.category.slug)
-        
+
     categories = Category.objects.all().order_by('name')
+    price_unit_choices = Product.PRICE_UNIT_CHOICES
     return render(request, 'ceo_portal/edit_asset.html', {
         'product': product,
-        'categories': categories
+        'categories': categories,
+        'price_unit_choices': price_unit_choices,
     })
 
 @login_required

@@ -25,12 +25,30 @@ class Category(models.Model):
         verbose_name_plural = "Categories"
 
 class Product(models.Model):
+    PRICE_UNIT_CHOICES = [
+        ('per piece',  'Per Piece'),
+        ('per yard',   'Per Yard'),
+        ('per set',    'Per Set'),
+        ('per pair',   'Per Pair')
+    ]
+
+
     name = models.CharField(max_length=200)
     slug = models.SlugField(max_length=250, unique=True, blank=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='products')
     image = models.ImageField(upload_to='products/')
     description = models.TextField()
     sku = models.CharField(max_length=50, unique=True)
+    price = models.DecimalField(
+        max_digits=14, decimal_places=2,
+        null=True, blank=True,
+        help_text='Price in Nigerian Naira (₦). Leave blank to hide pricing.'
+    )
+    price_unit = models.CharField(
+        max_length=20, choices=PRICE_UNIT_CHOICES,
+        default='per piece', blank=True,
+        help_text='Unit of measurement for the quoted price.'
+    )
     is_available = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
 

@@ -5,7 +5,7 @@
 {% block content %}
 <div class="theme-bg-secondary py-24 px-6">
     <div class="max-w-6xl mx-auto flex justify-between items-end">
-        <div>
+        <div data-aos="fade-up" data-aos-duration="1000">
             <h2 class="text-gold uppercase tracking-[0.6em] text-[10px] font-bold mb-4">The Selection</h2>
             <h1 class="brand-font text-7xl font-bold tracking-tighter italic theme-text">{{ category_name|upper }}</h1>
         </div>
@@ -13,44 +13,90 @@
     </div>
 </div>
 
+<!-- ══════════════════════════════════════════════
+     CURRENCY PREFERENCE WIDGET
+════════════════════════════════════════════════ -->
+{% with has_prices=products|length %}
+{% if products %}
+<div id="currencyBar" class="sticky top-0 z-40 backdrop-blur-2xl border-b border-white/5 bg-[#0a0a0a]/80 px-6 py-4 transition-all duration-300">
+    <div class="max-w-7xl mx-auto flex items-center justify-between md:justify-end gap-6 flex-wrap">
+        <div class="flex items-center gap-4">
+            <span class="text-[10px] text-gray-400 tracking-[0.4em] uppercase font-light">Select Currency</span>
+            <div class="relative group">
+                <select id="currencySelect"
+                        class="bg-transparent border-b border-white/20 text-white text-xs font-light tracking-widest uppercase px-0 py-1 outline-none hover:border-ark-gold focus:border-ark-gold transition-all cursor-pointer appearance-none pr-6 group-hover:text-ark-gold">
+                    <option value="NGN">NGN (₦)</option>
+                    <option value="USD">USD ($)</option>
+                    <option value="GBP">GBP (£)</option>
+                    <option value="EUR">EUR (€)</option>
+                    <option value="GHS">GHS (₵)</option>
+                    <option value="ZAR">ZAR (R)</option>
+                    <option value="KES">KES (KSh)</option>
+                    <option value="CAD">CAD (C$)</option>
+                    <option value="AED">AED (د.إ)</option>
+                    <option value="SAR">SAR (﷼)</option>
+                </select>
+                <div class="absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500 group-hover:text-ark-gold transition-colors">
+                    <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 9l-7 7-7-7"/></svg>
+                </div>
+            </div>
+        </div>
+        <div class="flex items-center gap-2 opacity-60">
+            <span id="rateSpinner" class="hidden w-3 h-3 border border-gray-500 border-t-ark-gold rounded-full animate-spin"></span>
+            <span id="rateText" class="text-[9px] text-gray-500 font-light tracking-widest uppercase">Live Rates</span>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endwith %}
+
 <div class="max-w-7xl mx-auto px-6 py-24 theme-bg">
     <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-24">
         {% for product in products %}
-        <div class="group relative animate-fadeInUp transition-all duration-500 hover:-translate-y-6 hover:z-50 active:scale-[0.98] cursor-pointer">
+        <div data-aos="fade-up" data-aos-delay="{% cycle '0' '150' %}" class="group relative transition-all duration-500 hover:-translate-y-6 hover:z-50 active:scale-[0.98] cursor-pointer">
             <div class="relative aspect-[16/10] overflow-hidden rounded-3xl theme-card shadow-2xl group-hover:shadow-[0_40px_80px_rgba(212,175,55,0.2)] transition-all duration-700">
-                
+
                 <!-- Dynamic Lighting/Glare overlay -->
                 <div class="absolute inset-0 z-20 opacity-0 group-hover:opacity-100 bg-gradient-to-tr from-transparent via-white/20 to-transparent transition-opacity duration-500 pointer-events-none transform -translate-x-[150%] group-hover:translate-x-[150%] transition-transform ease-out duration-1000"></div>
 
                 {% if product.image %}
                 <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-full object-cover grayscale-[40%] group-hover:grayscale-0 transition-transform duration-1000 scale-100 group-hover:scale-110">
                 {% endif %}
-                
+
                 {% if not product.is_available %}
                 <div class="absolute inset-0 z-30 bg-[var(--bg-primary)]/80 backdrop-blur-md flex flex-col items-center justify-center transition-all duration-500">
                     <h4 class="brand-font italic text-5xl text-gold mb-2 group-hover:scale-110 transition-transform duration-500">Acquired</h4>
                 </div>
                 {% endif %}
-                
+
                 <!-- Deep Base Gradient -->
                 <div class="absolute inset-0 z-10 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
             </div>
 
-            <div class="mt-8 transition-all duration-500 transform group-hover:-translate-y-2 relative z-30 px-2">
-                <div class="flex justify-between items-baseline mb-4">
-                    <h3 class="text-4xl font-bold tracking-tighter brand-font italic group-hover:text-gold transition-colors duration-300 theme-text">{{ product.name|upper }}</h3>
+            <div class="mt-8 transition-all duration-500 transform group-hover:-translate-y-2 relative z-30 px-2 flex flex-col items-center text-center">
+                <h3 class="text-3xl font-light tracking-[0.2em] uppercase theme-text mb-3 opacity-90 hover:opacity-100 transition-opacity">{{ product.name }}</h3>
+                
+                {% if product.price %}
+                <div class="mb-5 flex flex-col items-center">
+                    <p class="converted-price text-xl tracking-widest font-light text-ark-gold"
+                       data-ngn="{{ product.price }}"
+                       data-unit="{{ product.get_price_unit_display }}">
+                        ₦{{ product.price|floatformat:0 }}
+                    </p>
+                    <div class="w-8 h-[1px] bg-ark-gold/30 my-2"></div>
+                    <p class="price-unit-label text-[9px] uppercase tracking-[0.3em] text-gray-500">{{ product.get_price_unit_display }}</p>
                 </div>
-                <p class="theme-text-muted font-light leading-relaxed text-sm max-w-lg mb-8 opacity-70 group-hover:opacity-100 transition-opacity duration-500">
+                {% endif %}
+                <p class="theme-text-muted font-light leading-relaxed text-sm max-w-lg mb-8 opacity-60 group-hover:opacity-100 transition-opacity duration-500">
                     {{ product.description }}
                 </p>
-                
-                <form action="{% url 'toggle_selection' product.id %}" method="POST" class="toggle-selection-form">
+
+                <form action="{% url 'toggle_selection' product.id %}" method="POST" class="toggle-selection-form w-full max-w-[200px] mt-4">
                     {% csrf_token %}
                     <input type="hidden" name="action" value="add">
-                    <button type="submit" class="relative w-full overflow-hidden border border-white/10 py-5 text-[10px] font-black uppercase tracking-[0.4em] transition-all duration-500 bg-[var(--bg-secondary)] hover:bg-gold hover:text-black hover:border-gold hover:shadow-[0_0_30px_rgba(212,175,55,0.4)] active:scale-95 rounded-2xl group/btn">
-                        <span class="relative z-10 flex items-center justify-center gap-3">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
-                            Add To Selection
+                    <button type="submit" class="relative w-full overflow-hidden border border-ark-gold/30 py-3 text-[9px] font-black uppercase tracking-[0.3em] transition-all duration-500 bg-transparent hover:bg-ark-gold hover:text-black hover:border-ark-gold active:scale-95 group/btn">
+                        <span class="relative z-10 flex items-center justify-center gap-2">
+                            Add To Inquiry
                         </span>
                     </button>
                 </form>
@@ -63,4 +109,101 @@
         {% endfor %}
     </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// ══════════════════════════════════════════════
+//  LIVE CURRENCY CONVERTER
+//  - Default: NGN (Nigerian Naira) — no API call needed
+//  - On switch: fetches live rates from open.er-api.com (free, no key)
+//  - Preference saved to localStorage
+// ══════════════════════════════════════════════
+
+const CURRENCY_SYMBOLS = {
+    NGN: '₦', USD: '$', GBP: '£', EUR: '€',
+    GHS: '₵', ZAR: 'R', KES: 'KSh', CAD: 'C$',
+    AED: 'د.إ', SAR: '﷼',
+};
+
+let exchangeRates = {};   // { USD: 0.00063, GBP: 0.00050, … }  rates vs NGN
+let currentCurrency = localStorage.getItem('ark_currency') || 'NGN';
+
+const select     = document.getElementById('currencySelect');
+const rateText   = document.getElementById('rateText');
+const rateSpinner = document.getElementById('rateSpinner');
+
+// Restore saved preference
+if (select) {
+    select.value = currentCurrency;
+}
+
+async function fetchRates(currency) {
+    if (currency === 'NGN') {
+        applyConversion('NGN', 1);
+        return;
+    }
+    rateSpinner.classList.remove('hidden');
+    rateText.textContent = 'Fetching live rate…';
+    try {
+        // Free API – no key required, CORS-friendly
+        const res  = await fetch(`https://open.er-api.com/v6/latest/NGN`);
+        const data = await res.json();
+        if (data && data.rates) {
+            exchangeRates = data.rates;
+            const rate = data.rates[currency] || 1;
+            applyConversion(currency, rate);
+        } else {
+            throw new Error('Bad response');
+        }
+    } catch (e) {
+        console.warn('Currency API unavailable, falling back to NGN.', e);
+        select.value = 'NGN';
+        currentCurrency = 'NGN';
+        applyConversion('NGN', 1);
+        rateText.textContent = 'Live rates unavailable – showing ₦ NGN';
+    } finally {
+        rateSpinner.classList.add('hidden');
+    }
+}
+
+function applyConversion(currency, rate) {
+    const symbol = CURRENCY_SYMBOLS[currency] || currency;
+
+    document.querySelectorAll('.converted-price').forEach(el => {
+        const ngn  = parseFloat(el.dataset.ngn);
+        const unit = el.dataset.unit;
+        if (isNaN(ngn)) return;
+
+        const converted = ngn * rate;
+        // Format nicely: 2 decimal places for small numbers, 0 for large
+        const formatted = converted >= 100
+            ? converted.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })
+            : converted.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+        el.textContent = `${symbol}${formatted}`;
+    });
+
+    // Rate hint text
+    if (currency === 'NGN') {
+        rateText.textContent = 'Default: ₦ NGN';
+    } else {
+        const displayRate = (rate < 0.01)
+            ? rate.toExponential(4)
+            : rate.toLocaleString(undefined, { minimumFractionDigits: 4, maximumFractionDigits: 6 });
+        rateText.textContent = `1 NGN = ${displayRate} ${currency}`;
+    }
+}
+
+// Init on page load
+if (select) {
+    fetchRates(currentCurrency);
+
+    select.addEventListener('change', function () {
+        currentCurrency = this.value;
+        localStorage.setItem('ark_currency', currentCurrency);
+        fetchRates(currentCurrency);
+    });
+}
+</script>
 {% endblock %}

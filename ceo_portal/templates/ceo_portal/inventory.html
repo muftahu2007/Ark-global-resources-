@@ -114,11 +114,19 @@
             </div>
             <div class="p-6">
                 <div class="flex justify-between items-start mb-4">
-                    <div>
+                    <div class="flex-1 min-w-0">
                         <h4 class="text-sm font-bold theme-text tracking-widest uppercase truncate w-40"
                             title="{{ product.name }}">{{ product.name }}</h4>
                         <p class="text-[8px] text-ark-gold font-bold tracking-[0.2em] uppercase mt-1">{{ product.category.name }}</p>
                     </div>
+                    {% if product.price %}
+                    <div class="flex-shrink-0 text-right ml-2">
+                        <span class="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-ark-gold/10 border border-ark-gold/20">
+                            <span class="text-ark-gold text-[9px] font-black font-mono">₦{{ product.price|floatformat:0 }}</span>
+                        </span>
+                        <p class="text-[7px] text-gray-500 mt-0.5 text-right">{{ product.get_price_unit_display }}</p>
+                    </div>
+                    {% endif %}
                 </div>
                 <div class="flex gap-2">
                     <a href="{% url 'ceo_edit_asset' product.pk %}"
