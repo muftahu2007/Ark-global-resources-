@@ -20,6 +20,14 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 from ceo_portal import views as ceo_views
+from django.contrib.sitemaps.views import sitemap
+from ark_catalog.sitemaps import StaticViewSitemap, CategorySitemap
+from django.views.generic import TemplateView
+
+sitemaps = {
+    'static': StaticViewSitemap,
+    'categories': CategorySitemap,
+}
 
 urlpatterns = [
     # Decoy Honeypot Door (Traps attacker bots)
@@ -30,7 +38,11 @@ urlpatterns = [
     
     path('', include('ark_catalog.urls')),
     path('ceo-portal/', include('ceo_portal.urls')),
-]
     
+    # SEO Routes
+    path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
+    path('robots.txt', TemplateView.as_view(template_name="robots.txt", content_type="text/plain")),
+]
+
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

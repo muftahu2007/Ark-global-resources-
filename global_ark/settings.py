@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'django_q',
     'cloudinary_storage',
     'cloudinary',
+    'django.contrib.sitemaps',
     'whitenoise.runserver_nostatic', # Optional: for testing prod-like static locally
 ]
 
@@ -140,6 +141,13 @@ USE_I18N = True
 
 USE_TZ = True
 
+# Free Database Caching (Alternative to Redis)
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
+        'LOCATION': 'ark_cache_table',
+    }
+}
 
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = 'static/'
