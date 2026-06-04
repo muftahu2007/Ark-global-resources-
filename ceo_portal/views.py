@@ -403,13 +403,10 @@ def decoy_admin(request):
             
         user_agent = request.META.get('HTTP_USER_AGENT', 'Unknown')
         
-        # Log intrusion attempt in the decoy, masking the password to prevent accidental credential logging
-        masked_password = '*' * len(password) if password else ''
         SecurityLog.objects.create(
             ip_address=ip,
             user_agent=user_agent,
-            attempted_username=username,
-            attempted_password=masked_password
+            attempted_username=username
         )
         
         # Smart Tarpit: Count logs from this IP in the last 15 minutes

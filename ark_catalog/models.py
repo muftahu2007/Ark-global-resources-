@@ -56,9 +56,16 @@ class Product(models.Model):
         if not self.slug:
             self.slug = slugify(self.name)
 
-        # Image Optimization Engine
+        # Determine if image optimization is needed
+        is_new_image = False
+        update_fields = kwargs.get('update_fields', None)
+        
+        # If we are only updating specific fields (like from the async task itself), skip optimization check
+        if update_fields and 'image' in update_fields:
+            super().save(*args, **kwargs)
+            return
+
         if self.image:
-            is_new_image = False
             if self.pk is None:
                 is_new_image = True
             else:
@@ -69,30 +76,11 @@ class Product(models.Model):
                 except Product.DoesNotExist:
                     is_new_image = True
 
-            if is_new_image:
-                img = Image.open(self.image)
-                
-                # Enforce consistent color mode
-                if img.mode != 'RGB':
-                    img = img.convert('RGB')
-                
-                # Cinematic resizing (Max 1600px width/height for high-res web displays)
-                max_size = (1600, 1600)
-                img.thumbnail(max_size, Image.Resampling.LANCZOS)
-                
-                # Compress and format
-                output = BytesIO()
-                img.save(output, format='JPEG', quality=85, optimize=True)
-                output.seek(0)
-                
-                # Extract filename without extension
-                filename = os.path.splitext(self.image.name)[0]
-                new_filename = f"{filename}_optimized.jpg"
-                
-                # Replace the image file
-                self.image = File(output, name=new_filename)
-
         super().save(*args, **kwargs)
+
+        if is_new_image:
+            from django_q.tasks import async_task
+            async_task('ark_catalog.tasks.optimize_product_image_task', self.pk)
 
     def __str__(self):
         return self.name

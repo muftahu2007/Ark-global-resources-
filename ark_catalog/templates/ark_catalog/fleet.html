@@ -1,7 +1,12 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Fleet Management | Global Ark Resources{% endblock %}
+{% block title %}Elite Fleet Management | Global Ark Resources{% endblock %}
+{% block meta_description %}Comprehensive acquisition, maintenance, and logistical oversight for ultra-luxury automotive fleets.{% endblock %}
+{% block og_title %}Elite Fleet Management | Global Ark Resources{% endblock %}
+{% block og_description %}Comprehensive acquisition, maintenance, and logistical oversight for ultra-luxury automotive fleets.{% endblock %}
+{% block twitter_title %}Elite Fleet Management | Global Ark Resources{% endblock %}
+{% block twitter_description %}Comprehensive acquisition, maintenance, and logistical oversight for ultra-luxury automotive fleets.{% endblock %}
 
 {% block content %}
 <!-- Clean Page Header -->
@@ -22,7 +27,7 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-24">
 
         {% for product in fleet_cars %}
-        <div class="group relative animate-fadeInUp transition-all duration-500 hover:-translate-y-6 hover:z-50 active:scale-[0.98] cursor-pointer">
+        <div data-aos="fade-up" data-aos-delay="{% cycle '0' '150' %}" class="group relative transition-all duration-500 hover:-translate-y-6 hover:z-50 active:scale-[0.98] cursor-pointer">
             <div class="relative aspect-[16/10] overflow-hidden rounded-3xl theme-card shadow-2xl group-hover:shadow-[0_40px_80px_rgba(212,175,55,0.2)] transition-all duration-700">
                 
                 <!-- Dynamic Lighting/Glare overlay -->

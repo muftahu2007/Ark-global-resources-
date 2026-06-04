@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'ark_catalog',
     'ceo_portal',
+    'django_q',
     'cloudinary_storage',
     'cloudinary',
     'whitenoise.runserver_nostatic', # Optional: for testing prod-like static locally
@@ -241,4 +242,19 @@ LOGGING = {
             'propagate': False,
         },
     },
+}
+
+# Django-Q2 Configuration (Database Broker)
+Q_CLUSTER = {
+    'name': 'global_ark_cluster',
+    'workers': 4,
+    'recycle': 500,
+    'timeout': 90,  # Ensure enough time for image processing
+    'retry': 100,
+    'compress': True,
+    'save_limit': 250,
+    'queue_limit': 500,
+    'cpu_affinity': 1,
+    'label': 'Django Q',
+    'orm': 'default'  # Use Django's database as the broker
 }

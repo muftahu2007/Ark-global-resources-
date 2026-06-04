@@ -5,6 +5,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Primary Meta Tags -->
+    <meta name="description" content="{% block meta_description %}Global Ark Resources - Premium Assets, Private Sourcing, and Elite Fleet Management.{% endblock %}">
+    
+    <!-- Open Graph / Facebook / WhatsApp -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{% block og_url %}{{ request.build_absolute_uri }}{% endblock %}">
+    <meta property="og:title" content="{% block og_title %}Global Ark Resources Ltd{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}Elevating the standard of global logistics and elite sourcing. We secure, manage, and deliver the world's most premium assets.{% endblock %}">
+    <meta property="og:image" content="{% block og_image %}{{ request.scheme }}://{{ request.get_host }}{% static 'images/logo.jpg' %}{% endblock %}">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="{% block twitter_url %}{{ request.build_absolute_uri }}{% endblock %}">
+    <meta property="twitter:title" content="{% block twitter_title %}Global Ark Resources Ltd{% endblock %}">
+    <meta property="twitter:description" content="{% block twitter_description %}Elevating the standard of global logistics and elite sourcing. We secure, manage, and deliver the world's most premium assets.{% endblock %}">
+    <meta property="twitter:image" content="{% block twitter_image %}{{ request.scheme }}://{{ request.get_host }}{% static 'images/logo.jpg' %}{% endblock %}">
+
     <title>{% block title %}Global Ark Resources Ltd{% endblock %}</title>
     <script src="{% static 'js/tailwind.min.js' %}"></script>
     <link href="{% static 'css/fonts.css' %}" rel="stylesheet">

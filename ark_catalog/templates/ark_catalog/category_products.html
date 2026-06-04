@@ -1,6 +1,15 @@
 {% extends 'base.html' %}
 
 {% block title %}{{ category_name }} Collection | Global Ark Resources{% endblock %}
+{% block meta_description %}Explore our exclusive {{ category_name }} collection at Global Ark Resources.{% endblock %}
+{% block og_title %}{{ category_name }} Collection | Global Ark Resources{% endblock %}
+{% block og_description %}Explore our exclusive {{ category_name }} collection at Global Ark Resources.{% endblock %}
+{% block twitter_title %}{{ category_name }} Collection | Global Ark Resources{% endblock %}
+{% block twitter_description %}Explore our exclusive {{ category_name }} collection at Global Ark Resources.{% endblock %}
+{% if products.0.image %}
+{% block og_image %}{{ request.scheme }}://{{ request.get_host }}{{ products.0.image.url }}{% endblock %}
+{% block twitter_image %}{{ request.scheme }}://{{ request.get_host }}{{ products.0.image.url }}{% endblock %}
+{% endif %}
 
 {% block content %}
 <div class="theme-bg-secondary py-24 px-6">
