@@ -195,7 +195,7 @@ Sent via Ark Catalog Executive Portal
             
             counter = 1
             for cat_name, items in grouped_products.items():
-                wa_lines.append(f"✨ *{cat_name}*")
+                wa_lines.append(f"✨ * {cat_name}*")
                 for p in items:
                     num_emoji = f"{counter}️⃣" if counter <= 9 else f"{counter}."
                     wa_lines.append(f"   {num_emoji} {p.name}")
