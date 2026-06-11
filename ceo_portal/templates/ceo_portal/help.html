@@ -1,0 +1,144 @@
+{% extends 'ceo_portal/base.html' %}
+{% load static %}
+
+{% block header %}
+<h2 class="text-6xl font-black italic tracking-tighter" style="color: var(--text-primary);">System <span style="color: var(--accent-color);">Manual</span></h2>
+{% endblock %}
+
+{% block header_actions %}
+<div class="flex items-center gap-4">
+    <div class="p-4 glass-panel border-l-4" style="border-left-color: var(--accent-color);">
+        <p class="text-[10px] tracking-widest uppercase font-black" style="color: var(--text-primary);">Classification: Top Secret</p>
+        <p class="text-[8px] tracking-widest uppercase opacity-70 mt-1">Eyes Only - Executive Authority</p>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="space-y-8 animate-fadeInUp">
+    
+    <!-- Introduction -->
+    <div class="glass-panel p-8 md:p-12 relative overflow-hidden group">
+        <div class="absolute -right-20 -top-20 w-64 h-64 rounded-full blur-3xl opacity-10 group-hover:opacity-20 transition-opacity" style="background: var(--accent-color);"></div>
+        <div class="relative z-10 max-w-3xl">
+            <h3 class="text-2xl font-black uppercase tracking-wider mb-4" style="color: var(--text-primary);">Executive Overview</h3>
+            <p class="text-sm leading-relaxed mb-6" style="color: var(--text-secondary);">
+                Welcome to the ARK Executive Command Center manual. This documentation outlines the operational protocols, intelligence gathering mechanics, and vault management procedures available exclusively to the CEO. Misuse or unauthorized distribution of this intelligence is strictly prohibited.
+            </p>
+            <div class="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] font-bold" style="color: var(--accent-color);">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span>Read Carefully Before Operating The Console</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Grid of Guidelines -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        
+        <!-- The Vault -->
+        <div class="glass-panel p-8 border-t border-t-white/5 hover:border-t-ark-gold transition-colors group">
+            <div class="w-12 h-12 rounded-full mb-6 flex items-center justify-center border border-white/10" style="background: rgba(212, 175, 55, 0.05);">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" style="color: var(--accent-color);" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+                </svg>
+            </div>
+            <h4 class="text-lg font-black uppercase tracking-wider mb-4 text-white">The Vault (Inventory)</h4>
+            <ul class="space-y-4 text-sm text-white/70">
+                <li class="flex items-start gap-3">
+                    <div class="w-1.5 h-1.5 rounded-full mt-1.5 flex-shrink-0" style="background: var(--accent-color);"></div>
+                    <p><strong class="text-white">Adding Assets:</strong> Use the "Deploy New Asset" or "Mass Deployment" functions to add vehicles to the vault. Ensure high-quality imagery and accurate SKUs.</p>
+                </li>
+                <li class="flex items-start gap-3">
+                    <div class="w-1.5 h-1.5 rounded-full mt-1.5 flex-shrink-0" style="background: var(--accent-color);"></div>
+                    <p><strong class="text-white">Availability Toggle:</strong> Assets can be marked as "Secured" (Hidden from public catalog) or "Available" instantly via the toggle switch in the Vault list.</p>
+                </li>
+                <li class="flex items-start gap-3">
+                    <div class="w-1.5 h-1.5 rounded-full mt-1.5 flex-shrink-0" style="background: var(--accent-color);"></div>
+                    <p><strong class="text-white">Mass Purge:</strong> Select multiple assets and use the Mass Purge feature to permanently delete outdated inventory.</p>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Intelligence Hub -->
+        <div class="glass-panel p-8 border-t border-t-white/5 hover:border-t-ark-gold transition-colors group">
+            <div class="w-12 h-12 rounded-full mb-6 flex items-center justify-center border border-white/10" style="background: rgba(212, 175, 55, 0.05);">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" style="color: var(--accent-color);" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+            </div>
+            <h4 class="text-lg font-black uppercase tracking-wider mb-4 text-white">Intelligence (Leads)</h4>
+            <ul class="space-y-4 text-sm text-white/70">
+                <li class="flex items-start gap-3">
+                    <div class="w-1.5 h-1.5 rounded-full mt-1.5 flex-shrink-0" style="background: var(--accent-color);"></div>
+                    <p><strong class="text-white">Lead Tracking:</strong> All incoming inquiries from the public portal are routed here. They contain contact info and the requested asset details.</p>
+                </li>
+                <li class="flex items-start gap-3">
+                    <div class="w-1.5 h-1.5 rounded-full mt-1.5 flex-shrink-0" style="background: var(--accent-color);"></div>
+                    <p><strong class="text-white">Client Dossiers:</strong> For high-priority leads, generate a Printable Dossier to take into meetings or pass to associates.</p>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Sourcing Desk -->
+        <div class="glass-panel p-8 border-t border-t-white/5 hover:border-t-ark-gold transition-colors group">
+            <div class="w-12 h-12 rounded-full mb-6 flex items-center justify-center border border-white/10" style="background: rgba(212, 175, 55, 0.05);">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" style="color: var(--accent-color);" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                </svg>
+            </div>
+            <h4 class="text-lg font-black uppercase tracking-wider mb-4 text-white">Sourcing Desk</h4>
+            <ul class="space-y-4 text-sm text-white/70">
+                <li class="flex items-start gap-3">
+                    <div class="w-1.5 h-1.5 rounded-full mt-1.5 flex-shrink-0" style="background: var(--accent-color);"></div>
+                    <p><strong class="text-white">Custom Requests:</strong> Manage bespoke requests from VIP clients looking for assets not currently in the vault.</p>
+                </li>
+                <li class="flex items-start gap-3">
+                    <div class="w-1.5 h-1.5 rounded-full mt-1.5 flex-shrink-0" style="background: var(--accent-color);"></div>
+                    <p><strong class="text-white">Status Management:</strong> Update the status of a request from "Pending Review" to "In Progress" or "Fulfilled".</p>
+                </li>
+                <li class="flex items-start gap-3">
+                    <div class="w-1.5 h-1.5 rounded-full mt-1.5 flex-shrink-0" style="background: var(--accent-color);"></div>
+                    <p><strong class="text-white">Broker Notes:</strong> Add internal encrypted notes to a sourcing request to track negotiations and broker interactions.</p>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Threat Console -->
+        <div class="glass-panel p-8 border-t border-t-red-500/20 hover:border-t-red-500 transition-colors group">
+            <div class="w-12 h-12 rounded-full mb-6 flex items-center justify-center border border-red-500/20" style="background: rgba(239, 68, 68, 0.05);">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+            </div>
+            <h4 class="text-lg font-black uppercase tracking-wider mb-4 text-white">Threat Console</h4>
+            <ul class="space-y-4 text-sm text-white/70">
+                <li class="flex items-start gap-3">
+                    <div class="w-1.5 h-1.5 rounded-full mt-1.5 bg-red-500 flex-shrink-0"></div>
+                    <p><strong class="text-white">Decoy Admin Logs:</strong> The system automatically logs IP addresses and user agents of anyone attempting to breach the decoy `/admin` portal.</p>
+                </li>
+                <li class="flex items-start gap-3">
+                    <div class="w-1.5 h-1.5 rounded-full mt-1.5 bg-red-500 flex-shrink-0"></div>
+                    <p><strong class="text-white">Threat Resolution:</strong> Review logs and mark threats as "Resolved" once investigated. Unresolved threats flash on the sidebar.</p>
+                </li>
+                <li class="flex items-start gap-3">
+                    <div class="w-1.5 h-1.5 rounded-full mt-1.5 bg-red-500 flex-shrink-0"></div>
+                    <p><strong class="text-white">System Sanitization:</strong> Use the "Purge Resolved" button to permanently delete addressed logs and keep the database clean.</p>
+                </li>
+            </ul>
+        </div>
+
+    </div>
+    
+    <!-- Support Footer -->
+    <div class="glass-panel p-6 flex flex-col md:flex-row items-center justify-between gap-6 border border-white/5">
+        <div>
+            <h4 class="text-sm font-black uppercase tracking-widest text-white mb-1">System Engineering</h4>
+            <p class="text-[10px] uppercase tracking-widest opacity-50">Maintained by MAB & Tech Team</p>
+        </div>
+        <a href="{% url 'ceo_dashboard' %}" class="btn-gold whitespace-nowrap">Return to Dashboard</a>
+    </div>
+
+</div>
+{% endblock %}

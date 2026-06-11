@@ -419,6 +419,11 @@ def decoy_admin(request):
 
 @login_required
 @user_passes_test(is_ceo, login_url='ceo_login')
+def ceo_help(request):
+    return render(request, 'ceo_portal/help.html')
+
+@login_required
+@user_passes_test(is_ceo, login_url='ceo_login')
 def threat_console(request):
     logs = SecurityLog.objects.all().order_by('-timestamp')
     q = request.GET.get('q', '')

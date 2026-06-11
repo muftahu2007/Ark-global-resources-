@@ -43,4 +43,5 @@ urlpatterns = [
     path('sourcing/<int:pk>/', views.sourcing_detail, name='ceo_sourcing_detail'),
     path('leads/dossier/<int:pk>/', views.lead_dossier_print, name='ceo_lead_dossier_print'),
     path('sourcing/dossier/<int:pk>/', views.sourcing_dossier_print, name='ceo_sourcing_dossier_print'),
+    path('help/', views.ceo_help, name='ceo_help'),
 ]
