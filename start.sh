@@ -3,4 +3,4 @@
 python manage.py qcluster &
 
 # Start the main web server in the foreground
-gunicorn global_ark.wsgi --log-file -
+gunicorn global_ark.wsgi --log-file - --timeout 90
