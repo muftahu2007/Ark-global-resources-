@@ -8,6 +8,11 @@ __pycache__/
 .env.bak
 *.env
 
+
+render_dump.json
+debug_dashboard.html
+output.html
+output_utf8.html
 # Other common Django/Python exclusions
 *.pyo
 *.pyd
