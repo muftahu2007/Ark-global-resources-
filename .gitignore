@@ -4,6 +4,10 @@ __pycache__/
 *.pyc
 .vscode/
 
+.env
+.env.bak
+*.env
+
 # Other common Django/Python exclusions
 *.pyo
 *.pyd
