@@ -20,12 +20,6 @@
                 {% for product in selected_products %}
                 <div class="theme-glass p-6 flex flex-col md:flex-row items-center space-y-6 md:space-y-0 
                 md:space-x-8 group relative overflow-hidden rounded-2xl">
-                    <div class="w-32 aspect-[4/3] overflow-hidden bg-[var(--bg-secondary)] flex-shrink-0">
-                        {% if product.image %}
-                        <img src="{{ product.image.url }}" class="w-full h-full object-cover grayscale-[30%]
-                         group-hover:grayscale-0 transition-all duration-700">
-                        {% endif %}
-                    </div>
                     <div class="flex-grow">
                         <p class="text-[8px] uppercase tracking-[0.4em] text-gold mb-1 font-bold">{{ product.category }}</p>
                         <h3 class="text-2xl font-bold tracking-tight brand-font italic theme-text">{{ product.name|upper }}</h3>
@@ -103,10 +97,6 @@
 
                         <!-- Location Details -->
                         <div class="space-y-6 pb-8 border-b border-white/5">
-                            <div class="text-center mb-2">
-                                <h4 class="text-[9px] uppercase tracking-[0.4em] font-black theme-text-muted">Location Details</h4>
-                            </div>
-                            
                             <!-- Country -->
                             <div class="space-y-2 relative">
                                 <label class="text-[8px] uppercase tracking-widest font-black theme-text-muted ml-8">Country</label>
@@ -208,7 +198,7 @@
                                     </div>
                                     <div>
                                         <p class="text-[10px] uppercase tracking-[0.2em] font-black theme-text">Instant WhatsApp</p>
-                                        <p class="text-[8px] theme-text-muted uppercase tracking-widest mt-1">Direct to Executive Board</p>
+                                        <p class="text-[8px] theme-text-muted uppercase tracking-widest mt-1">Instant Reply</p>
                                     </div>
                                 </div>
                                 <div class="w-4 h-4 rounded-full border-2 border-white/20 peer-checked:border-blue-500 flex items-center justify-center pointer-events-none transition-all">
@@ -231,7 +221,7 @@
                                     </div>
                                     <div>
                                         <p class="text-[10px] uppercase tracking-[0.2em] font-black theme-text">Corporate Email</p>
-                                        <p class="text-[8px] theme-text-muted uppercase tracking-widest mt-1">Official Documented Inquiry</p>
+                                        <p class="text-[8px] theme-text-muted uppercase tracking-widest mt-1">Formal Enquiry</p>
                                     </div>
                                 </div>
                                 <div class="w-4 h-4 rounded-full border-2 border-white/20 peer-checked:border-green-500 flex items-center justify-center pointer-events-none transition-all">
@@ -319,7 +309,8 @@
 
         const defaultCountries = [
             "Nigeria", "United States", "United Kingdom", "Canada", "Australia", 
-            "Germany", "France", "South Africa", "Kenya", "Ghana"
+            "Germany", "France", "South Africa", "Kenya", "Ghana",
+            "United Arab Emirates", "Saudi Arabia"
         ];
 
         fetch('https://restcountries.com/v3.1/all')

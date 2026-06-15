@@ -101,7 +101,7 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
         {% for cat in categories %}
         <div class="group relative h-[500px] overflow-hidden theme-card shadow-2xl gsap-card opacity-0 translate-y-24">
-            {% if cat.slug == 'cars' %}
+            {% if cat.slug == 'cars' or cat.slug == 'fleet' or cat.slug == 'fleets' or cat.slug == 'vehicles' %}
                 <img src="{% static 'images/fleet_poster.png' %}" class="w-full h-full object-cover grayscale-[30%] group-hover:grayscale-0 transition-all duration-1000 group-hover:scale-105" alt="Cars Collection">
             {% elif cat.poster_image %}
                 <img src="{{ cat.poster_image.url }}" class="w-full h-full object-cover grayscale-[30%] group-hover:grayscale-0 transition-all duration-1000 group-hover:scale-105">
