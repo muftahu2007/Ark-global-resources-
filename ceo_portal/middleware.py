@@ -1,5 +1,7 @@
 from django.conf import settings
 from django.http import Http404, HttpResponseRedirect
+from django.contrib.auth import logout
+from django.contrib import messages
 
 class GatekeeperMiddleware:
     def __init__(self, get_response):
@@ -47,4 +49,31 @@ class GatekeeperMiddleware:
             raise Http404("Page not found")
 
         # For all other paths, continue processing normal middleware
+        return self.get_response(request)
+
+from django.shortcuts import resolve_url
+
+class AdminAutoLogoutMiddleware:
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        if hasattr(request, 'user') and request.user.is_authenticated and (request.user.is_staff or request.user.is_superuser):
+            # Ignore static and media files so loading images doesn't trigger a logout
+            if request.path.startswith(getattr(settings, 'MEDIA_URL', '/media/')) or \
+               request.path.startswith(getattr(settings, 'STATIC_URL', '/static/')):
+                return self.get_response(request)
+
+            secret_path = getattr(settings, 'SECRET_ADMIN_PATH', 'vault-console')
+            normalized_path = request.path.strip('/')
+            
+            # Allow both the secret django admin path AND the CEO portal
+            if not (normalized_path.startswith(secret_path) or normalized_path.startswith('ceo-portal')):
+                logout(request)
+                messages.info(request, 'You have been logged out of the admin session')
+                login_url = resolve_url(getattr(settings, 'LOGIN_URL', 'ceo_login'))
+                response = HttpResponseRedirect(login_url)
+                response.delete_cookie('vault_gatekeeper_token')
+                return response
+                
         return self.get_response(request)

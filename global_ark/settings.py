@@ -68,6 +68,7 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'ceo_portal.middleware.AdminAutoLogoutMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
@@ -267,3 +268,6 @@ Q_CLUSTER = {
     'label': 'Django Q',
     'orm': 'default'  # Use Django's database as the broker
 }
+
+# Auth settings
+LOGIN_URL = 'ceo_login'

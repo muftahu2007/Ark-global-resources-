@@ -63,15 +63,24 @@
                 </div>
 
                 <!-- Status -->
-                <div class="w-full md:w-48 text-right">
-                    <span class="inline-block px-4 py-2 rounded-full text-[9px] font-black tracking-widest uppercase border 
-                        {% if req.status == 'Received' %}bg-ark-gold/10 text-ark-gold border-ark-gold/20
-                        {% elif req.status == 'Researching' or req.status == 'Inspecting' %}bg-blue-500/10 text-blue-400 border-blue-500/20
-                        {% elif req.status == 'Secured' or req.status == 'Acquired' %}bg-green-500/10 text-green-400 border-green-500/20
-                        {% else %}bg-gray-500/10 text-gray-400 border-gray-500/20{% endif %}">
-                        {{ req.status }}
-                    </span>
-                    <p class="text-[8px] text-gray-600 mt-2 font-bold tracking-widest uppercase">{{ req.created_at|date:"M d, Y" }}</p>
+                <div class="w-full md:w-48 text-right flex flex-col items-end justify-between">
+                    <div>
+                        <span class="inline-block px-4 py-2 rounded-full text-[9px] font-black tracking-widest uppercase border 
+                            {% if req.status == 'Received' %}bg-ark-gold/10 text-ark-gold border-ark-gold/20
+                            {% elif req.status == 'Researching' or req.status == 'Inspecting' %}bg-blue-500/10 text-blue-400 border-blue-500/20
+                            {% elif req.status == 'Secured' or req.status == 'Acquired' %}bg-green-500/10 text-green-400 border-green-500/20
+                            {% else %}bg-gray-500/10 text-gray-400 border-gray-500/20{% endif %}">
+                            {{ req.status }}
+                        </span>
+                        <p class="text-[8px] text-gray-600 mt-2 font-bold tracking-widest uppercase">{{ req.created_at|date:"M d, Y" }}</p>
+                    </div>
+                    
+                    <button type="button" 
+                            onclick="purgeRecord(event, '{{ req.id }}', this)" 
+                            class="mt-4 px-4 py-1.5 rounded-full border border-red-500/20 text-red-500 hover:bg-red-500 hover:text-white transition-all text-[9px] font-black tracking-widest uppercase flex items-center gap-1.5 z-10 relative shadow-[0_0_10px_rgba(239,68,68,0.1)] hover:shadow-[0_0_15px_rgba(239,68,68,0.3)]">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        Purge
+                    </button>
                 </div>
             </div>
         </a>
@@ -82,4 +91,62 @@
         </div>
     {% endfor %}
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function purgeRecord(event, reqId, buttonElement) {
+        event.preventDefault(); // Stop navigation to detail page
+        event.stopPropagation(); // Stop event bubbling
+        
+        if (confirm("Are you sure you want to purge this record?")) {
+            // Find the closest card wrapper
+            const card = buttonElement.closest('a.card');
+            
+            // Show loading state
+            const originalText = buttonElement.innerHTML;
+            buttonElement.innerHTML = "Purging...";
+            buttonElement.disabled = true;
+
+            fetch(`/ceo-portal/sourcing/delete/${reqId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    // Fade out and remove the element
+                    card.style.opacity = '0';
+                    card.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        card.remove();
+                        // Check if it's the last element
+                        const container = document.querySelector('.space-y-6');
+                        if (container && container.querySelectorAll('a.card').length === 0) {
+                            container.innerHTML = `
+                            <div class="py-32 text-center glass-panel">
+                                <h3 class="text-2xl font-brand italic text-gray-600">The pipeline is clear.</h3>
+                                <p class="text-[10px] text-gray-700 tracking-[0.3em] uppercase mt-4">Waiting for incoming sourcing requests</p>
+                            </div>`;
+                        }
+                    }, 500);
+                } else {
+                    alert('Error purging record.');
+                    buttonElement.innerHTML = originalText;
+                    buttonElement.disabled = false;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while purging the record.');
+                buttonElement.innerHTML = originalText;
+                buttonElement.disabled = false;
+            });
+        }
+    }
+</script>
 {% endblock %}

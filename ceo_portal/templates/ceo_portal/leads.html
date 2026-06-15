@@ -71,9 +71,18 @@
                 </div>
             {% endif %}
             
-            <div class="mt-8 flex justify-between items-center text-[8px] font-black tracking-widest text-gray-700 uppercase">
-                <span>Ref ID: ARK-{{ lead.id }}</span>
-                <span>Logged: {{ lead.created_at|date:"M d, Y | H:i" }}</span>
+            <div class="mt-8 flex justify-between items-end text-[8px] font-black tracking-widest text-gray-700 uppercase">
+                <div class="flex flex-col gap-2">
+                    <span>Ref ID: ARK-{{ lead.id }}</span>
+                    <span>Logged: {{ lead.created_at|date:"M d, Y | H:i" }}</span>
+                </div>
+                
+                <button type="button" 
+                        onclick="purgeLead(event, '{{ lead.id }}', this)" 
+                        class="px-4 py-1.5 rounded-full border border-red-500/20 text-red-500 hover:bg-red-500 hover:text-white transition-all text-[9px] font-black tracking-widest uppercase flex items-center gap-1.5 shadow-[0_0_10px_rgba(239,68,68,0.1)] hover:shadow-[0_0_15px_rgba(239,68,68,0.3)]">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                    Purge
+                </button>
             </div>
         </div>
     {% empty %}
@@ -83,4 +92,63 @@
         </div>
     {% endfor %}
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function purgeLead(event, leadId, buttonElement) {
+        event.preventDefault();
+        event.stopPropagation();
+        
+        if (confirm("Are you sure you want to purge this intelligence record?")) {
+            const card = buttonElement.closest('div.card');
+            
+            const originalText = buttonElement.innerHTML;
+            buttonElement.innerHTML = "Purging...";
+            buttonElement.disabled = true;
+
+            fetch(`/ceo-portal/leads/delete/${leadId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.status === 'success') {
+                    card.style.opacity = '0';
+                    card.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        card.remove();
+                        const container = document.querySelector('.space-y-6');
+                        if (container && container.querySelectorAll('div.card').length === 0) {
+                            container.innerHTML = `
+                            <div class="py-32 text-center glass-panel">
+                                <h3 class="text-2xl font-brand italic text-gray-600">The intelligence feed is currently silent.</h3>
+                                <p class="text-[10px] text-gray-700 tracking-[0.3em] uppercase mt-4">Waiting for incoming transmissions</p>
+                            </div>`;
+                        }
+                    }, 500);
+                } else {
+                    alert('Error purging record.');
+                    buttonElement.innerHTML = originalText;
+                    buttonElement.disabled = false;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while purging the record.');
+                buttonElement.innerHTML = originalText;
+                buttonElement.disabled = false;
+            });
+        }
+    }
+</script>
 {% endblock %}

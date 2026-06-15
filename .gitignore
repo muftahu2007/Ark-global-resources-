@@ -9,6 +9,7 @@ __pycache__/
 *.env
 
 
+venv/
 render_dump.json
 debug_dashboard.html
 output.html

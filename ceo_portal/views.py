@@ -345,6 +345,18 @@ def lead_tracker(request):
 
 @login_required
 @user_passes_test(is_ceo, login_url='ceo_login')
+def lead_delete(request, pk):
+    if request.method == 'POST':
+        lead = get_object_or_404(Inquiry, pk=pk)
+        lead.delete()
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest' or request.headers.get('Content-Type') == 'application/json':
+            return JsonResponse({'status': 'success'})
+        messages.success(request, "Intelligence record purged.")
+        return redirect('ceo_leads')
+    return redirect('ceo_leads')
+
+@login_required
+@user_passes_test(is_ceo, login_url='ceo_login')
 def ceo_settings(request):
     if request.method == 'POST':
         action = request.POST.get('action')
@@ -519,3 +531,16 @@ def lead_dossier_print(request, pk):
 def sourcing_dossier_print(request, pk):
     s_req = get_object_or_404(SourcingRequest, pk=pk)
     return render(request, 'ceo_portal/dossier_print.html', {'type': 'sourcing', 'obj': s_req})
+
+@login_required
+@user_passes_test(is_ceo, login_url='ceo_login')
+def sourcing_delete(request, pk):
+    if request.method == 'POST':
+        s_req = get_object_or_404(SourcingRequest, pk=pk)
+        s_req.delete()
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest' or request.headers.get('Content-Type') == 'application/json':
+            return JsonResponse({'status': 'success'})
+        messages.success(request, "Sourcing request purged.")
+        return redirect('ceo_sourcing_list')
+    return redirect('ceo_sourcing_list')
+
