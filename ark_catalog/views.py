@@ -372,14 +372,13 @@ class AboutUsView(View):
 
 def check_disk_space(request):
     try:
-        # Run the standard Linux disk-free command
-        result = subprocess.run(['df', '-h'], capture_output=True, text=True)
-        
-        # Print it to your Render Logs so you can see it there too
-        print(result.stdout)
+        # Run 'du -sh *' to show the actual size of the files/folders in the project directory
+        # Also run 'du -sh .' to show total project size
+        cmd = "echo '--- Total App Size ---' && du -sh . && echo '\n--- Folder & File Breakdown ---' && du -sh * | sort -h"
+        result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
         
         # Wrap the output in a <pre> tag so the columns line up perfectly in the browser
         return HttpResponse(f"<pre>{result.stdout}</pre>")
         
     except Exception as e:
-        return HttpResponse(f"Error checking disk space: {str(e)}")
+        return HttpResponse(f"Error checking app size: {str(e)}")
