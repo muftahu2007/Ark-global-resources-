@@ -1,11 +1,12 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import ListView, DetailView, View, TemplateView
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.contrib import messages
 from django.urls import reverse
 from django.core.mail import send_mail, EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.conf import settings
+import subprocess
 from .models import Product, Inquiry, Category, SourcingRequest
 import urllib.parse
 
@@ -368,3 +369,17 @@ class SourcingTrackView(View):
 class AboutUsView(View):
     def get(self, request):
         return render(request, 'ark_catalog/about.html')
+
+def check_disk_space(request):
+    try:
+        # Run the standard Linux disk-free command
+        result = subprocess.run(['df', '-h'], capture_output=True, text=True)
+        
+        # Print it to your Render Logs so you can see it there too
+        print(result.stdout)
+        
+        # Wrap the output in a <pre> tag so the columns line up perfectly in the browser
+        return HttpResponse(f"<pre>{result.stdout}</pre>")
+        
+    except Exception as e:
+        return HttpResponse(f"Error checking disk space: {str(e)}")

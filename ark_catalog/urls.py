@@ -1,6 +1,6 @@
 from django.urls import path
 from django.views.generic import TemplateView
-from .views import ProductListView, CategoryProductView, ToggleSelectionView, InquiryFormView, FleetManagementView, PrivateSourcingView, AboutUsView, SourcingTrackView
+from .views import ProductListView, CategoryProductView, ToggleSelectionView, InquiryFormView, FleetManagementView, PrivateSourcingView, AboutUsView, SourcingTrackView, check_disk_space
 
 urlpatterns = [
     path('', ProductListView.as_view(), name='catalog'),
@@ -11,4 +11,5 @@ urlpatterns = [
     path('private-sourcing/', PrivateSourcingView.as_view(), name='private_sourcing'),
     path('private-sourcing/track/', SourcingTrackView.as_view(), name='sourcing_track'),
     path('about/', AboutUsView.as_view(), name='about'),
+    path('system-check-disk/', check_disk_space, name='check_disk'),
 ]
