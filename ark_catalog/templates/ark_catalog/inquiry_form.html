@@ -37,6 +37,22 @@
     }
     .choices__inner { color: white; font-weight: 300; font-size: 0.875rem; }
     .choices__list--single { padding: 0; }
+    
+    /* Improve visibility of dropdown options and search input */
+    .choices__list--dropdown .choices__item {
+        color: #ffffff;
+        font-size: 0.875rem;
+    }
+    .choices__input {
+        background-color: #2a2a2a !important;
+        color: #ffffff !important;
+        border: 1px solid rgba(212, 175, 55, 0.3) !important;
+        border-radius: 4px;
+        padding: 8px !important;
+    }
+    .choices__input::placeholder {
+        color: rgba(255, 255, 255, 0.5) !important;
+    }
 </style>
 
 <div class="relative py-24 px-6 overflow-hidden min-h-screen">

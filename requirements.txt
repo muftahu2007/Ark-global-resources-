@@ -21,3 +21,4 @@ urllib3==2.7.0
 whitenoise==6.12.0
 django-countries==7.5.1
 django-phonenumber-field[phonenumbers]==7.3.0
+setuptools
