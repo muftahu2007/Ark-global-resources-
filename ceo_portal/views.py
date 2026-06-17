@@ -386,7 +386,9 @@ def edit_category(request, pk):
     if request.method == 'POST':
         name = request.POST.get('name')
         if name:
+            from django.utils.text import slugify
             category.name = name
+            category.slug = slugify(name)
             category.save()
             messages.success(request, "Directory refinement complete.")
     return redirect('ceo_settings')

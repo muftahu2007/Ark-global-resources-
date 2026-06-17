@@ -4,8 +4,8 @@ from django.core.files import File
 from io import BytesIO
 from PIL import Image, ImageFile
 import os
-from phonenumber_field.modelfields import PhoneNumberField
 from django_countries.fields import CountryField
+from phonenumber_field.modelfields import PhoneNumberField
 
 # Fix for "image file is truncated" errors on large bulk uploads
 ImageFile.LOAD_TRUNCATED_IMAGES = True
@@ -89,9 +89,9 @@ class Product(models.Model):
 
 class Inquiry(models.Model):
     customer_name = models.CharField(max_length=200)
-    phone = PhoneNumberField(blank=True, null=True)
     email = models.EmailField()
     country = CountryField(blank=True, null=True)
+    phone = PhoneNumberField(blank=True, null=True)
     state = models.CharField(max_length=100, blank=True, null=True)
     lga = models.CharField(max_length=100, blank=True, null=True)
     city = models.CharField(max_length=100, blank=True, null=True)

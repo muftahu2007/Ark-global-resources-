@@ -143,7 +143,7 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_TZ = True
- 
+
 # Free Database Caching (Alternative to Redis)
 CACHES = {
     'default': {
