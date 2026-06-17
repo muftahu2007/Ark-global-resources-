@@ -8,6 +8,7 @@ from django.template.loader import render_to_string
 from django.conf import settings
 import subprocess
 from .models import Product, Inquiry, Category, SourcingRequest
+from .forms import InquiryForm
 import urllib.parse
 
 class ProductListView(ListView):
@@ -109,10 +110,14 @@ class InquiryFormView(View):
         })
 
     def post(self, request):
-        name = request.POST.get('name', '')
-        phone = request.POST.get('phone', '')
-        email = request.POST.get('email', '')
-        message = request.POST.get('message', '')
+        form = InquiryForm(request.POST)
+        if not form.is_valid():
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"{field.capitalize()}: {error}")
+            return redirect('inquiry_form')
+
+        inquiry = form.save(commit=False)
         method = request.POST.get('method', 'whatsapp')
         
         selection_ids = request.session.get('selection', [])
@@ -123,10 +128,19 @@ class InquiryFormView(View):
         products_dict = {str(p.id): p for p in Product.objects.filter(id__in=selection_ids)}
         products = [products_dict[i] for i in selection_ids if i in products_dict]
         
-        inquiry = Inquiry.objects.create(
-            customer_name=name, phone=phone, email=email, message=message
-        )
+        inquiry.save()
         inquiry.items_requested.set(set(products))
+        
+        name = inquiry.customer_name
+        phone = str(inquiry.phone) if inquiry.phone else ''
+        email = inquiry.email
+        message = inquiry.message
+        country_name = inquiry.country.name if inquiry.country else ''
+        city = inquiry.city or ''
+        state = inquiry.state or ''
+        full_address = inquiry.full_address or ''
+        location_str = f"{city}, {state}, {country_name}".strip(", ")
+
         
         from collections import defaultdict
         grouped_email_products = defaultdict(list)
@@ -151,9 +165,10 @@ ARK GLOBAL RESOURCES - NEW LEAD
 
 CUSTOMER PROFILE:
 -----------------
-Name:    {name}
-Phone:   {phone}
-Email:   {email}
+Name:     {name}
+Phone:    {phone}
+Email:    {email}
+Location: {full_address} ({location_str})
 
 SELECTED INVENTORY:
 -------------------{email_items_str}
@@ -191,6 +206,7 @@ Sent via Ark Catalog Executive Portal
 
             wa_lines = [
                 f"👋 Hello Ark Global, my name is {name}.",
+                f"📍 Location: {location_str}",
                 "I'm interested in these items:\n"
             ]
             

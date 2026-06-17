@@ -57,6 +57,8 @@ INSTALLED_APPS = [
     'cloudinary',
     'django.contrib.sitemaps',
     'whitenoise.runserver_nostatic', # Optional: for testing prod-like static locally
+    'django_countries',
+    'phonenumber_field',
 ]
 
 MIDDLEWARE = [
@@ -271,3 +273,6 @@ Q_CLUSTER = {
 
 # Auth settings
 LOGIN_URL = 'ceo_login'
+
+# PhoneNumber default region
+PHONENUMBER_DEFAULT_REGION = 'US'
