@@ -25,3 +25,5 @@ class CeoPortalConfig(AppConfig):
                         os.remove(path)
         except Exception:
             pass
+
+        import ceo_portal.signals

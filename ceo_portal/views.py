@@ -73,25 +73,23 @@ def ceo_logout(request):
 @login_required
 @user_passes_test(is_ceo, login_url='ceo_login')
 def dashboard(request):
-    # Analytics: Lead Velocity (Last 14 days)
+    # Analytics: Lead Velocity (Last 30 days)
     from django.db.models import Count
     from django.db.models.functions import TruncDate
+    from .models import DailyMetric
     
     today = datetime.date.today()
-    fourteen_days_ago = today - datetime.timedelta(days=13)
+    thirty_days_ago = today - datetime.timedelta(days=29)
     
-    daily_leads = Inquiry.objects.filter(created_at__date__gte=fourteen_days_ago) \
-        .annotate(date=TruncDate('created_at')) \
-        .values('date') \
-        .annotate(count=Count('id')) \
-        .order_by('date')
+    daily_metrics = DailyMetric.objects.filter(date__gte=thirty_days_ago).order_by('date')
     
     # Optimized gap filling using a dictionary
-    leads_map = {entry['date']: entry['count'] for entry in daily_leads}
+    metrics_map = {entry.date: entry.inquiries_count + entry.sourcing_count for entry in daily_metrics}
+    
     lead_velocity_data = [
-        {'date': (fourteen_days_ago + datetime.timedelta(days=i)).strftime('%b %d'),
-         'count': leads_map.get(fourteen_days_ago + datetime.timedelta(days=i), 0)}
-        for i in range(14)
+        {'date': (thirty_days_ago + datetime.timedelta(days=i)).strftime('%b %d'),
+         'count': metrics_map.get(thirty_days_ago + datetime.timedelta(days=i), 0)}
+        for i in range(30)
     ]
 
     # Analytics: Category Distribution
