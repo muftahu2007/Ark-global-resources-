@@ -29,8 +29,8 @@
         border-color: #d4af37 transparent transparent transparent;
     }
     .choices__list--dropdown {
-        background-color: #1a1a1a;
-        border: 1px solid rgba(212, 175, 55, 0.2);
+        background-color: #1a1a1a !important;
+        border: 1px solid rgba(212, 175, 55, 0.2) !important;
     }
     .choices__list--dropdown .choices__item--selectable.is-highlighted {
         background-color: rgba(212, 175, 55, 0.1);
@@ -157,7 +157,7 @@
                                     <select name="country" id="countrySelect" required class="w-full text-sm font-light">
                                         <option value="">Select Country</option>
                                         {% for country in countries %}
-                                        <option value="{{ country.code }}">{{ country.name }}</option>
+                                        <option value="{{ country.code }}">{{ country.unicode_flag }} {{ country.name }}</option>
                                         {% endfor %}
                                     </select>
                                 </div>
@@ -365,7 +365,7 @@
 
         // Initialize Choices.js
         const countryChoices = new Choices(countrySelect, {
-            searchEnabled: true,
+            searchEnabled: false,
             itemSelectText: '',
             shouldSort: false
         });
