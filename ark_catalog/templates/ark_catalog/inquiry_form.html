@@ -40,7 +40,8 @@
     
     /* Improve visibility of dropdown options and search input */
     .choices__list--dropdown .choices__item {
-        color: #ffffff;
+        color: #ffffff !important;
+        opacity: 1 !important;
         font-size: 0.875rem;
     }
     .choices__input {
@@ -71,6 +72,11 @@
                 {% for product in selected_products %}
                 <div class="theme-glass p-6 flex flex-col md:flex-row items-center space-y-6 md:space-y-0 
                 md:space-x-8 group relative overflow-hidden rounded-2xl">
+                    {% if product.image %}
+                    <div class="w-24 h-24 md:w-32 md:h-32 flex-shrink-0 rounded-xl overflow-hidden border border-white/10 relative">
+                        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-full object-cover">
+                    </div>
+                    {% endif %}
                     <div class="flex-grow">
                         <p class="text-[8px] uppercase tracking-[0.4em] text-gold mb-1 font-bold">{{ product.category }}</p>
                         <h3 class="text-2xl font-bold tracking-tight brand-font italic theme-text">{{ product.name|upper }}</h3>
@@ -346,6 +352,7 @@
         
         const ngFields = document.getElementById('ng-fields');
         const phoneDiv = document.getElementById('phoneDiv');
+        const cityDiv = document.getElementById('cityDiv');
 
         // Initialize intl-tel-input
         const phoneInput = document.querySelector("#phoneInput");
@@ -390,12 +397,14 @@
                 ngFields.classList.remove('hidden');
                 stateSelect.required = true;
                 lgaSelect.required = true;
+                cityDiv.classList.add('hidden');
                 cityInput.required = false;
                 cityInput.value = '';
             } else {
                 ngFields.classList.add('hidden');
                 stateSelect.required = false;
                 lgaSelect.required = false;
+                cityDiv.classList.remove('hidden');
                 cityInput.required = true;
                 stateChoices.setChoiceByValue('');
                 lgaChoices.clearChoices();
