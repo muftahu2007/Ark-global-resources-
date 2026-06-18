@@ -46,7 +46,6 @@ def ceo_login(request):
     if not User.objects.filter(is_superuser=True).exists():
         messages.info(request, "No executive authority found. System initialization required.")
         return redirect('ceo_signup')
-
     if request.user.is_authenticated and request.user.is_superuser:
         return redirect('ceo_dashboard')
 
@@ -64,7 +63,6 @@ def ceo_login(request):
         form = AuthenticationForm()
     return render(request, 'ceo_portal/auth/login.html', {'form': form})
 
-@login_required
 def ceo_logout(request):
     logout(request)
     messages.info(request, "Logged out of CEO Command Center.")
