@@ -16,10 +16,18 @@ class ProductListView(ListView):
     model = Product
     template_name = 'ark_catalog/catalog.html'     
     
+    paginate_by = 20
+    
     def get_context_data(self, **kwargs):
+        from django.core.cache import cache
         context = super().get_context_data(**kwargs)
-        # Unique categories from the Category model
-        context['categories'] = Category.objects.all().order_by('name')
+        
+        categories = cache.get('public_catalog_categories')
+        if categories is None:
+            categories = list(Category.objects.only('id', 'name', 'slug', 'image', 'description').order_by('name'))
+            cache.set('public_catalog_categories', categories, 60 * 60)
+            
+        context['categories'] = categories
         return context
 
 class CategoryProductView(ListView):
@@ -28,15 +36,22 @@ class CategoryProductView(ListView):
     template_name = 'ark_catalog/category_products.html'
     context_object_name = 'products'
 
+    paginate_by = 20
+
     def get_queryset(self):
         self.category_slug = self.kwargs.get('category')
         self.category = get_object_or_404(Category, slug=self.category_slug)
-        return Product.objects.filter(category=self.category, is_available=True)
+        return Product.objects.select_related('category').filter(category=self.category, is_available=True)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['category_name'] = self.category.name
         return context
+
+    def render_to_response(self, context, **response_kwargs):
+        if self.request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return render(self.request, 'ark_catalog/partials/product_list.html', context)
+        return super().render_to_response(context, **response_kwargs)
 
 class FleetManagementView(ListView):
     """Dynamic view showing all available cars."""
@@ -44,15 +59,22 @@ class FleetManagementView(ListView):
     template_name = 'ark_catalog/fleet.html'
     context_object_name = 'fleet_cars'
 
+    paginate_by = 20
+
     def get_queryset(self):
         from django.db.models import Q
         # We query by category name dynamically, matching common names for the fleet
-        return Product.objects.filter(
+        return Product.objects.select_related('category').filter(
             Q(category__name__icontains='Car') | 
             Q(category__name__icontains='Fleet') | 
             Q(category__name__icontains='Vehicle'),
             is_available=True
         )
+
+    def render_to_response(self, context, **response_kwargs):
+        if self.request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return render(self.request, 'ark_catalog/partials/product_list.html', context)
+        return super().render_to_response(context, **response_kwargs)
 
 class ToggleSelectionView(View):
     def post(self, request, product_id):
@@ -100,7 +122,7 @@ class InquiryFormView(View):
             
         selection_ids = request.session.get('selection', [])
         
-        products_dict = {str(p.id): p for p in Product.objects.filter(id__in=selection_ids)}
+        products_dict = {str(p.id): p for p in Product.objects.select_related('category').filter(id__in=selection_ids)}
         selected_products = [products_dict[i] for i in selection_ids if i in products_dict]
         
         return render(request, 'ark_catalog/inquiry_form.html', {
@@ -125,7 +147,7 @@ class InquiryFormView(View):
             messages.error(request, "Your selection is empty.")
             return redirect('catalog')
         
-        products_dict = {str(p.id): p for p in Product.objects.filter(id__in=selection_ids)}
+        products_dict = {str(p.id): p for p in Product.objects.select_related('category').filter(id__in=selection_ids)}
         products = [products_dict[i] for i in selection_ids if i in products_dict]
         
         inquiry.save()
@@ -232,7 +254,12 @@ Sent via Ark Catalog Executive Portal
 
 class PrivateSourcingView(View):
     def get(self, request):
-        categories = Category.objects.all().order_by('name')
+        from django.core.cache import cache
+        categories = cache.get('public_catalog_categories_only_name')
+        if categories is None:
+            categories = list(Category.objects.only('id', 'name').order_by('name'))
+            cache.set('public_catalog_categories_only_name', categories, 60 * 60)
+            
         return render(request, 'ark_catalog/sourcing.html', {
             'categories': categories
         })

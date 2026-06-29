@@ -79,7 +79,7 @@ def dashboard(request):
     today = datetime.date.today()
     thirty_days_ago = today - datetime.timedelta(days=29)
     
-    daily_metrics = DailyMetric.objects.filter(date__gte=thirty_days_ago).order_by('date')
+    daily_metrics = DailyMetric.objects.only('date', 'inquiries_count', 'sourcing_count').filter(date__gte=thirty_days_ago).order_by('date')
     
     # Optimized gap filling using a dictionary
     metrics_map = {entry.date: entry.inquiries_count + entry.sourcing_count for entry in daily_metrics}
@@ -111,14 +111,14 @@ def dashboard(request):
 @login_required
 @user_passes_test(is_ceo, login_url='ceo_login')
 def inventory_list(request, category_slug=None):
-    categories = Category.objects.all().order_by('name')
+    categories = Category.objects.only('id', 'name', 'slug').order_by('name')
     q = request.GET.get('q', '')
     
     if category_slug:
         current_category = get_object_or_404(Category, slug=category_slug)
-        products = Product.objects.filter(category=current_category)
+        products = Product.objects.select_related('category').filter(category=current_category)
     else:
-        products = Product.objects.all()
+        products = Product.objects.select_related('category').all()
         current_category = None
         
     if q:
@@ -130,8 +130,15 @@ def inventory_list(request, category_slug=None):
         
     products = products.order_by('-created_at')
     
+    from django.core.paginator import Paginator
+    paginator = Paginator(products, 20)
+    page_obj = paginator.get_page(request.GET.get('page'))
+    
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        return render(request, 'ceo_portal/partials/inventory_list.html', {'products': page_obj})
+    
     return render(request, 'ceo_portal/inventory.html', {
-        'products': products, 
+        'products': page_obj, 
         'current_category': current_category,
         'categories': categories,
         'search_query': q
@@ -202,7 +209,7 @@ def add_asset(request):
             if not image: missing.append("Media Attachment")
             messages.error(request, f"Deployment failed. Missing: {', '.join(missing)}")
 
-    categories = Category.objects.all().order_by('name')
+    categories = Category.objects.only('id', 'name', 'slug').order_by('name')
     price_unit_choices = Product.PRICE_UNIT_CHOICES
     return render(request, 'ceo_portal/add_asset.html', {
         'categories': categories,
@@ -255,7 +262,7 @@ def bulk_add_assets(request):
         else:
             messages.error(request, "Deployment failed. Missing: Vault Directory or Media Attachments.")
 
-    categories = Category.objects.all().order_by('name')
+    categories = Category.objects.only('id', 'name', 'slug').order_by('name')
     return render(request, 'ceo_portal/bulk_add_assets.html', {'categories': categories})
 
 @login_required
@@ -297,7 +304,7 @@ def edit_asset(request, pk):
         messages.success(request, f"Asset '{product.name}' updated.")
         return redirect('ceo_inventory_category', category_slug=product.category.slug)
 
-    categories = Category.objects.all().order_by('name')
+    categories = Category.objects.only('id', 'name', 'slug').order_by('name')
     price_unit_choices = Product.PRICE_UNIT_CHOICES
     return render(request, 'ceo_portal/edit_asset.html', {
         'product': product,
@@ -337,7 +344,15 @@ def bulk_delete_assets(request):
 @user_passes_test(is_ceo, login_url='ceo_login')
 def lead_tracker(request):
     leads = Inquiry.objects.all().order_by('-created_at')
-    return render(request, 'ceo_portal/leads.html', {'leads': leads})
+    
+    from django.core.paginator import Paginator
+    paginator = Paginator(leads, 20)
+    page_obj = paginator.get_page(request.GET.get('page'))
+    
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        return render(request, 'ceo_portal/partials/lead_list.html', {'leads': page_obj})
+        
+    return render(request, 'ceo_portal/leads.html', {'leads': page_obj})
 
 @login_required
 @user_passes_test(is_ceo, login_url='ceo_login')
@@ -362,7 +377,7 @@ def ceo_settings(request):
             messages.warning(request, "CEO account deleted. The portal is now open for a new successor.")
             return redirect('catalog')
     
-    categories = Category.objects.all().order_by('name')
+    categories = Category.objects.only('id', 'name', 'slug').order_by('name')
     return render(request, 'ceo_portal/settings.html', {'categories': categories})
 
 @login_required
@@ -453,8 +468,15 @@ def threat_console(request):
     active_threat_count = SecurityLog.objects.filter(resolved=False).count()
     resolved_threat_count = SecurityLog.objects.filter(resolved=True).count()
     
+    from django.core.paginator import Paginator
+    paginator = Paginator(logs, 20)
+    page_obj = paginator.get_page(request.GET.get('page'))
+    
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        return render(request, 'ceo_portal/partials/threat_list.html', {'logs': page_obj})
+    
     return render(request, 'ceo_portal/threats.html', {
-        'logs': logs,
+        'logs': page_obj,
         'active_threat_count': active_threat_count,
         'resolved_threat_count': resolved_threat_count,
         'status_filter': status_filter,
@@ -493,8 +515,16 @@ def sourcing_list(request):
             Q(customer_name__icontains=q) | 
             Q(asset_class__icontains=q)
         )
+        
+    from django.core.paginator import Paginator
+    paginator = Paginator(requests, 20)
+    page_obj = paginator.get_page(request.GET.get('page'))
+    
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        return render(request, 'ceo_portal/partials/sourcing_list.html', {'requests': page_obj})
+        
     return render(request, 'ceo_portal/sourcing_list.html', {
-        'requests': requests,
+        'requests': page_obj,
         'status_filter': status_filter,
         'search_query': q
     })
