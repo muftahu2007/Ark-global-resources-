@@ -212,28 +212,27 @@ if not DEBUG:
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
 
-# Cloudinary Media Storage Configuration
-if not DEBUG:
-    STORAGES["default"]["BACKEND"] = "cloudinary_storage.storage.MediaCloudinaryStorage"
-    
-    # django-cloudinary-storage strictly requires CLOUDINARY_STORAGE to be defined.
-    # We parse the CLOUDINARY_URL environment variable provided by Render.
-    import urllib.parse
-    cloudinary_url = os.getenv('CLOUDINARY_URL', '')
-    if cloudinary_url:
-        parsed_url = urllib.parse.urlparse(cloudinary_url)
-        CLOUDINARY_STORAGE = {
-            'CLOUD_NAME': parsed_url.hostname,
-            'API_KEY': parsed_url.username,
-            'API_SECRET': parsed_url.password,
-        }
-    else:
-        # Fallback if CLOUDINARY_URL is missing
-        CLOUDINARY_STORAGE = {
-            'CLOUD_NAME': os.getenv('CLOUDINARY_CLOUD_NAME', 'doezvrej5'),
-            'API_KEY': os.getenv('CLOUDINARY_API_KEY', '929979217828284'),
-            'API_SECRET': os.getenv('CLOUDINARY_API_SECRET', 'Zgd17qrkl9PtnD6415510651770'),
-        }
+# Cloudinary Media Storage Configuration (Always Active for Vercel)
+STORAGES["default"]["BACKEND"] = "cloudinary_storage.storage.MediaCloudinaryStorage"
+
+# django-cloudinary-storage strictly requires CLOUDINARY_STORAGE to be defined.
+# We parse the CLOUDINARY_URL environment variable provided by Render or Vercel.
+import urllib.parse
+cloudinary_url = os.getenv('CLOUDINARY_URL', '')
+if cloudinary_url:
+    parsed_url = urllib.parse.urlparse(cloudinary_url)
+    CLOUDINARY_STORAGE = {
+        'CLOUD_NAME': parsed_url.hostname,
+        'API_KEY': parsed_url.username,
+        'API_SECRET': parsed_url.password,
+    }
+else:
+    # Fallback if CLOUDINARY_URL is missing
+    CLOUDINARY_STORAGE = {
+        'CLOUD_NAME': os.getenv('CLOUDINARY_CLOUD_NAME', 'doezvrej5'),
+        'API_KEY': os.getenv('CLOUDINARY_API_KEY', '929979217828284'),
+        'API_SECRET': os.getenv('CLOUDINARY_API_SECRET', 'Zgd17qrkl9PtnD6415510651770'),
+    }
 
 LOGGING = {
     'version': 1,
