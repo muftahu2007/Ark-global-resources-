@@ -33,7 +33,7 @@ if env_path.exists():
 SECRET_KEY = os.getenv('SECRET_KEY', '(s^m362)rixn$a!@3nu_5^k$j^ehrt%=+u@m73fd4b(v3!6%@#')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1,.herokuapp.com,.onrender.com,.arkglobalresources.com,.vercel.app').split(',')
 
