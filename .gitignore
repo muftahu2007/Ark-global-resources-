@@ -19,7 +19,7 @@ output_utf8.html
 *.pyd
 env/
 venv/
-staticfiles/
+
 media/
 session_debug.txt
 .DS_Store
