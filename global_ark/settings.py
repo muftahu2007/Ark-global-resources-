@@ -162,9 +162,9 @@ STORAGES = {
     "default": {
         "BACKEND": "django.core.files.storage.FileSystemStorage",
     },
-    "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
-    },
+    #"staticfiles": {
+    #    "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    #},
 }
 
 # Prevent missing sourcemaps (e.g., chart.umd.js.map) from crashing collectstatic on Render
