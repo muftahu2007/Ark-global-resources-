@@ -24,7 +24,7 @@ class ProductListView(ListView):
         
         categories = cache.get('public_catalog_categories')
         if categories is None:
-            categories = list(Category.objects.only('id', 'name', 'slug', 'image', 'description').order_by('name'))
+            categories = list(Category.objects.only('id', 'name', 'slug', 'poster_image').order_by('name'))
             cache.set('public_catalog_categories', categories, 60 * 60)
             
         context['categories'] = categories
