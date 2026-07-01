@@ -190,7 +190,7 @@ DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', EMAIL_HOST_USER)
 
 # ARK Executive Configuration
 ARK_EXECUTIVE_EMAIL = os.getenv('ARK_EXECUTIVE_EMAIL', EMAIL_HOST_USER)
-WHATSAPP_NUMBER = os.getenv('WHATSAPP_NUMBER', '2348107707349')
+WHATSAPP_NUMBER = os.getenv('WHATSAPP_NUMBER', '2348071062530')
 
 # Mass Deployment Settings (Increased limits for bulk image uploads)
 DATA_UPLOAD_MAX_NUMBER_FILES = 5000  # Allow up to 5000 files in one upload

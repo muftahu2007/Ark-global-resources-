@@ -37,7 +37,7 @@ To get the application running locally on your machine, follow these steps:
    CLOUDINARY_URL=cloudinary://API_KEY:API_SECRET@CLOUD_NAME
 
    # Business Configuration
-   WHATSAPP_NUMBER=2348012345678
+   WHATSAPP_NUMBER=2348071062530
    ARK_EXECUTIVE_EMAIL=executive@arkglobalresources.com
 
    # Email (Gmail SMTP)
