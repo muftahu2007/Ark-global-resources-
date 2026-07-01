@@ -1,5 +1,64 @@
+# ── General crawlers (Google, Bing, etc.) ───────────────────────────────────
 User-agent: *
-Disallow: /admin/
+Allow: /
+Allow: /category/
+Allow: /inquiry/
+Allow: /fleet-management/
+Allow: /private-sourcing/
+Allow: /about/
+Allow: /sitemap.xml
 Disallow: /ceo-portal/
+Disallow: /admin/
+Disallow: /private-sourcing/track/
+Disallow: /toggle-selection/
+Disallow: /system-check-disk/
 
+# ── AI Training Crawlers (allowed to index public catalog) ───────────────────
+User-agent: GPTBot
+Allow: /
+Allow: /category/
+Allow: /fleet-management/
+Allow: /private-sourcing/
+Allow: /about/
+Disallow: /ceo-portal/
+Disallow: /admin/
+
+User-agent: Google-Extended
+Allow: /
+Allow: /category/
+Allow: /fleet-management/
+Allow: /private-sourcing/
+Allow: /about/
+Disallow: /ceo-portal/
+Disallow: /admin/
+
+User-agent: anthropic-ai
+Allow: /
+Allow: /category/
+Allow: /fleet-management/
+Allow: /private-sourcing/
+Allow: /about/
+Disallow: /ceo-portal/
+Disallow: /admin/
+
+User-agent: CCBot
+Allow: /
+Disallow: /ceo-portal/
+Disallow: /admin/
+
+User-agent: FacebookBot
+Allow: /
+Disallow: /ceo-portal/
+Disallow: /admin/
+
+User-agent: PerplexityBot
+Allow: /
+Allow: /category/
+Allow: /fleet-management/
+Allow: /private-sourcing/
+Allow: /about/
+Disallow: /ceo-portal/
+Disallow: /admin/
+
+# ── Sitemap ──────────────────────────────────────────────────────────────────
 Sitemap: {{ request.scheme }}://{{ request.get_host }}/sitemap.xml

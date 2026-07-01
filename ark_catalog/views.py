@@ -14,8 +14,8 @@ import urllib.parse
 class ProductListView(ListView):
     """Home view showing category boxes."""
     model = Product
-    template_name = 'ark_catalog/catalog.html'     
-    
+    template_name = 'ark_catalog/catalog.html'
+    ordering = ['category__name', 'name']  # Consistent order for pagination
     paginate_by = 20
     
     def get_context_data(self, **kwargs):
@@ -41,7 +41,9 @@ class CategoryProductView(ListView):
     def get_queryset(self):
         self.category_slug = self.kwargs.get('category')
         self.category = get_object_or_404(Category, slug=self.category_slug)
-        return Product.objects.select_related('category').filter(category=self.category, is_available=True)
+        return Product.objects.select_related('category').filter(
+            category=self.category, is_available=True
+        ).order_by('name')  # Consistent order for pagination
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -65,11 +67,11 @@ class FleetManagementView(ListView):
         from django.db.models import Q
         # We query by category name dynamically, matching common names for the fleet
         return Product.objects.select_related('category').filter(
-            Q(category__name__icontains='Car') | 
-            Q(category__name__icontains='Fleet') | 
+            Q(category__name__icontains='Car') |
+            Q(category__name__icontains='Fleet') |
             Q(category__name__icontains='Vehicle'),
             is_available=True
-        )
+        ).order_by('category__name', 'name')  # Consistent order for pagination
 
     def render_to_response(self, context, **response_kwargs):
         if self.request.headers.get('x-requested-with') == 'XMLHttpRequest':

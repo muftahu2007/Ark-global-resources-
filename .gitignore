@@ -30,6 +30,7 @@ scratch_backfill.py
 seed_*.py
 cleanup_vault.py
 generate_pdf_manual.py
+test_password_reset.py
 
 # Test files & Raw Assets
 test_tiny.jpg
