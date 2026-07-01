@@ -34,3 +34,8 @@ generate_pdf_manual.py
 # Test files & Raw Assets
 test_tiny.jpg
 
+# Test output artifacts
+.coverage
+.pytest_cache/
+htmlcov/
+

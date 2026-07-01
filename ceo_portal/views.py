@@ -169,7 +169,7 @@ def add_asset(request):
         name = request.POST.get('name')
         category_id = request.POST.get('category')
         new_category_name = request.POST.get('new_category')
-        description = request.POST.get('description')
+        description = request.POST.get('description', '')
         sku = request.POST.get('sku')
         image = request.FILES.get('image')
         price_raw = request.POST.get('price', '').strip()
@@ -273,7 +273,7 @@ def edit_asset(request, pk):
         product.name = request.POST.get('name')
         category_id = request.POST.get('category')
         new_category_name = request.POST.get('new_category')
-        product.description = request.POST.get('description')
+        product.description = request.POST.get('description', '')
 
         new_sku = request.POST.get('sku')
         if new_sku:

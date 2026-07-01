@@ -24,7 +24,7 @@ if env_path.exists():
             line = line.strip()
             if line and not line.startswith('#'):
                 key, val = line.split('=', 1)
-                os.environ[key.strip()] = val.strip()
+                os.environ.setdefault(key.strip(), val.strip())
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
@@ -275,3 +275,9 @@ LOGIN_URL = 'ceo_login'
 
 # PhoneNumber default region
 PHONENUMBER_DEFAULT_REGION = 'US'
+
+import sys
+if 'pytest' in sys.modules:
+    DATABASES = {'default': {'ENGINE': 'django.db.backends.sqlite3', 'NAME': ':memory:'}}
+    SECURE_SSL_REDIRECT = False
+    STORAGES = {'default': {'BACKEND': 'django.core.files.storage.FileSystemStorage'}, 'staticfiles': {'BACKEND': 'django.contrib.staticfiles.storage.StaticFilesStorage'}}

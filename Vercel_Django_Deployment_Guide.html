@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vercel & Django Deployment Postmortem</title>
+    <style>
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            background-color: #fcfcfc;
+        }
+        h1 {
+            color: #000;
+            border-bottom: 2px solid #eaeaea;
+            padding-bottom: 10px;
+            font-size: 2.2em;
+        }
+        h2 {
+            color: #222;
+            margin-top: 40px;
+            border-bottom: 1px solid #eaeaea;
+            padding-bottom: 8px;
+        }
+        h3 {
+            color: #444;
+            margin-top: 25px;
+        }
+        .issue-card {
+            background: #fff;
+            border: 1px solid #eaeaea;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+        }
+        .error-tag {
+            display: inline-block;
+            background: #ffebe9;
+            color: #cf222e;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+        .solution {
+            background: #e6ffed;
+            border-left: 4px solid #2da44e;
+            padding: 10px 15px;
+            margin-top: 15px;
+            border-radius: 0 4px 4px 0;
+        }
+        code {
+            background: #f6f8fa;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.9em;
+        }
+        .print-btn {
+            display: block;
+            width: 200px;
+            margin: 0 auto 30px;
+            padding: 12px;
+            background: #000;
+            color: #fff;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        @media print {
+            .print-btn { display: none; }
+            body { background-color: #fff; }
+            .issue-card { box-shadow: none; border: 1px solid #ccc; page-break-inside: avoid; }
+        }
+    </style>
+</head>
+<body>
+
+    <button class="print-btn" onclick="window.print()">💾 Save as PDF</button>
+
+    <h1>Vercel & Django Deployment Postmortem</h1>
+    <p><strong>Project:</strong> Ark Global Resources</p>
+    <p><strong>Date:</strong> June 30, 2026</p>
+    <p>This document outlines the specific challenges encountered while deploying a complex Django application to Vercel's serverless infrastructure, the root causes of the errors, and the exact solutions implemented. Keep this as a reference for future Python deployments.</p>
+
+    <h2>1. The Trial and Error Breakdown</h2>
+
+    <div class="issue-card">
+        <div class="error-tag">Error 404: Missing CSS & Images</div>
+        <h3>The `.gitignore` Trap</h3>
+        <p><strong>What happened:</strong> Vercel successfully deployed the HTML, but all CSS and images (like the logo) were returning a 404 Not Found error.</p>
+        <p><strong>Root Cause:</strong> Vercel does not automatically execute <code>collectstatic</code> reliably for Python. To fix it, we generated the <code>staticfiles</code> folder locally to push to GitHub. However, inside your <code>.gitignore</code> file, the rules <code>staticfiles/</code> and <code>Images/</code> were present. This caused Git to secretly ignore and delete your CSS and Logo files during every push.</p>
+        <div class="solution">
+            <strong>The Fix:</strong> Removed <code>staticfiles/</code> and <code>Images/</code> from <code>.gitignore</code>, ran <code>python manage.py collectstatic --noinput</code> locally, and pushed the folder directly to GitHub.
+        </div>
+    </div>
+
+    <div class="issue-card">
+        <div class="error-tag">Error 500: FieldDoesNotExist</div>
+        <h3>The Hidden Code Typo</h3>
+        <p><strong>What happened:</strong> The homepage crashed with a generic 500 error after connecting to the fresh Supabase database.</p>
+        <p><strong>Root Cause:</strong> When we forced <code>DEBUG=True</code> to reveal the traceback, we found a <code>FieldDoesNotExist</code> error in <code>ark_catalog/views.py</code>. The view queried <code>Category.objects.only('image', 'description')</code>, but the Category model only had a <code>poster_image</code> field, and no description. The local SQLite database hid this error due to old cached data, but the fresh Supabase database crashed instantly.</p>
+        <div class="solution">
+            <strong>The Fix:</strong> Updated the query in <code>views.py</code> to request valid fields: <code>Category.objects.only('id', 'name', 'slug', 'poster_image')</code>.
+        </div>
+    </div>
+
+    <div class="issue-card">
+        <div class="error-tag">FATAL: EMAXCONNSESSION</div>
+        <h3>Connection Pool Exhaustion</h3>
+        <p><strong>What happened:</strong> Vercel logs threw a FATAL error stating "max clients reached in session mode". The database completely locked up.</p>
+        <p><strong>Root Cause:</strong> Serverless architecture (Vercel) spins up a new mini-server for every visitor. In <code>settings.py</code>, Django was instructed to keep connections open for 10 minutes (<code>conn_max_age=600</code>). Vercel rapidly opened 15 connections, kept them open, and instantly exhausted Supabase's Session connection pool.</p>
+        <div class="solution">
+            <strong>The Fix:</strong> Set <code>conn_max_age=0</code> in Django to force immediate connection closure. Instructed the use of Supabase's Transaction Pooler Port (<code>6543</code>) in Vercel environment variables.
+        </div>
+    </div>
+
+    <div class="issue-card">
+        <div class="error-tag">[Errno 30] Read-only file system: '/var/task/media'</div>
+        <h3>The Serverless Read-Only Crash</h3>
+        <p><strong>What happened:</strong> Attempting to edit or upload a product in the CEO Portal crashed the application entirely.</p>
+        <p><strong>Root Cause:</strong> Vercel's physical hard drives are permanently read-only to protect against malicious attacks. Cloudinary was supposed to handle uploads, but because it was wrapped in an <code>if not DEBUG:</code> block, any instance where Vercel suspected debug mode was active caused Django to attempt saving files directly to the read-only Vercel hard drive.</p>
+        <div class="solution">
+            <strong>The Fix:</strong> Removed the <code>DEBUG</code> condition entirely for Cloudinary. We forcefully set <code>STORAGES["default"]["BACKEND"] = "cloudinary_storage.storage.MediaCloudinaryStorage"</code> so that images ALWAYS bypass the Vercel hard drive and go straight to the cloud.
+        </div>
+    </div>
+
+    <h2>2. Future Checklist for Django on Vercel</h2>
+    <p>To prevent these issues on future deployments, ensure your project meets the following criteria before deploying to Vercel:</p>
+    <ul>
+        <li><strong>No Background Workers:</strong> Vercel does not support background tasks (like <code>django-q</code>). Use Render if background workers are required.</li>
+        <li><strong>Database URLs:</strong> Always use the Supabase Transaction Port (e.g., <code>6543</code>) for serverless environments.</li>
+        <li><strong>Close Connections:</strong> Ensure <code>conn_max_age=0</code> in your database configuration.</li>
+        <li><strong>Commit Static Files:</strong> Do not rely on Vercel to build static assets. Run <code>collectstatic</code> locally and ensure <code>staticfiles</code> is not in your <code>.gitignore</code>.</li>
+        <li><strong>Force Cloud Storage:</strong> Never use <code>FileSystemStorage</code> in production on Vercel. Force your storage backend to Cloudinary or S3 unconditionally.</li>
+    </ul>
+
+</body>
+</html>
