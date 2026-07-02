@@ -180,44 +180,48 @@ class InquiryFormView(View):
                 email_items_str += f"   {idx}. {p.name}{sku_str}\n"
         
         if method == 'email':
-            # Handle Executive Email Transmission
-            subject = f"🏛️ NEW EXECUTIVE INQUIRY: {name}"
-            email_body = f"""
-=========================================
-ARK GLOBAL RESOURCES - NEW LEAD
-=========================================
+            # Handle Executive Email Transmission — Premium HTML
+            subject = f"\u26ea\ufe0f NEW EXECUTIVE INQUIRY: {name}"
 
-CUSTOMER PROFILE:
------------------
-Name:     {name}
-Phone:    {phone}
-Email:    {email}
-Location: {full_address} ({location_str})
+            # Build base URL for image embedding
+            base_url = f"{request.scheme}://{request.get_host()}"
 
-SELECTED INVENTORY:
--------------------{email_items_str}
+            # Context for the HTML template
+            html_context = {
+                'customer_name': name,
+                'phone': phone,
+                'email': email,
+                'full_address': full_address,
+                'location_str': location_str,
+                'message': message,
+                'grouped_products': dict(grouped_email_products),
+                'item_count': len(products),
+                'base_url': base_url,
+            }
+            html_content = render_to_string('emails/admin_inquiry_notification.html', html_context)
 
-CLIENT MESSAGE:
----------------
-"{message if message else 'No additional notes provided.'}"
+            plain_body = (
+                f"NEW EXECUTIVE INQUIRY: {name}\n"
+                f"Email: {email} | Phone: {phone}\n"
+                f"Location: {full_address} ({location_str})\n\n"
+                f"Items Requested:{email_items_str}\n"
+                f"Message: {message or 'None'}"
+            )
 
-=========================================
-Sent via Ark Catalog Executive Portal
-=========================================
-"""
             try:
-                send_mail(
+                msg = EmailMultiAlternatives(
                     subject,
-                    email_body,
+                    plain_body,
                     settings.DEFAULT_FROM_EMAIL,
                     [getattr(settings, 'ARK_EXECUTIVE_EMAIL', 'admin@example.com')],
-                    fail_silently=False,
                 )
+                msg.attach_alternative(html_content, "text/html")
+                msg.send(fail_silently=False)
                 request.session['selection'] = []
                 return render(request, 'ark_catalog/success.html', {'method': 'email'})
             except Exception as e:
                 messages.error(request, f"Email delivery failed. Please use WhatsApp. Error: {e}")
-                return redirect('inquiry_form') 
+                return redirect('inquiry_form')
 
         else:
             # Handle WhatsApp Transmission (Shopping Assistant Format)
@@ -246,7 +250,7 @@ Sent via Ark Catalog Executive Portal
             if message:
                 wa_lines.append(f"💬 *Notes:* {message}\n")
                 
-            wa_lines.append("Reply with a number to continue! 🏛️")
+            wa_lines.append("Please get back to me at your earliest convenience regarding pricing and availability. Thank you! 🏛️")
             
             wa_text = "\n".join(wa_lines)
             encoded_message = urllib.parse.quote(wa_text)
@@ -332,41 +336,39 @@ Global Ark Resources Ltd."""
         # --- SEND NOTIFICATION TO EXECUTIVE ---
 
         if method == 'email':
-            subject = f"🏛️ NEW PRIVATE SOURCING: {name} [{t_code}]"
-            email_body = f"""
-=========================================
-ARK GLOBAL RESOURCES - PRIVATE SOURCING
-=========================================
-TRACKING CODE: {t_code}
+            subject = f"\u26ea\ufe0f NEW PRIVATE SOURCING: {name} [{t_code}]"
 
-CLIENT PROFILE:
----------------
-Name:    {name}
-Phone:   {phone}
-Email:   {email}
+            base_url = f"{request.scheme}://{request.get_host()}"
 
-SOURCING REQUIREMENTS:
-----------------------
-Asset Class: {asset_type}
-Budget:      {budget}
-Timeline:    {timeline}
+            html_context = {
+                'name': name,
+                'phone': phone,
+                'email': email,
+                'asset_type': asset_type,
+                'budget': budget,
+                'timeline': timeline,
+                'details': details,
+                'tracking_code': t_code,
+                'base_url': base_url,
+            }
+            html_content = render_to_string('emails/admin_sourcing_notification.html', html_context)
 
-ADDITIONAL SPECIFICATIONS:
---------------------------
-"{details if details else 'No additional details provided.'}"
+            plain_body = (
+                f"NEW PRIVATE SOURCING: {name} [{t_code}]\n"
+                f"Email: {email} | Phone: {phone}\n"
+                f"Asset: {asset_type} | Budget: {budget} | Timeline: {timeline}\n"
+                f"Details: {details or 'None'}"
+            )
 
-=========================================
-Sent via Ark Catalog Executive Portal
-=========================================
-"""
             try:
-                send_mail(
+                msg = EmailMultiAlternatives(
                     subject,
-                    email_body,
+                    plain_body,
                     settings.DEFAULT_FROM_EMAIL,
                     [getattr(settings, 'ARK_EXECUTIVE_EMAIL', 'admin@example.com')],
-                    fail_silently=False,
                 )
+                msg.attach_alternative(html_content, "text/html")
+                msg.send(fail_silently=False)
                 return render(request, 'ark_catalog/success.html', {'method': 'email', 'tracking_code': t_code})
             except Exception as e:
                 messages.error(request, f"Email delivery failed. Please use WhatsApp. Error: {e}")
