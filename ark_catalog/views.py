@@ -183,8 +183,11 @@ class InquiryFormView(View):
             # Handle Executive Email Transmission — Premium HTML
             subject = f"\u26ea\ufe0f NEW EXECUTIVE INQUIRY: {name}"
 
-            # Build base URL for image embedding
-            base_url = f"{request.scheme}://{request.get_host()}"
+            # Build absolute URLs for reliable image rendering in email clients
+            logo_url = request.build_absolute_uri('/static/images/logo.jpg')
+            for p in products:
+                if p.image:
+                    p.absolute_image_url = request.build_absolute_uri(p.image.url)
 
             # Context for the HTML template
             html_context = {
@@ -196,7 +199,7 @@ class InquiryFormView(View):
                 'message': message,
                 'grouped_products': dict(grouped_email_products),
                 'item_count': len(products),
-                'base_url': base_url,
+                'logo_url': logo_url,
             }
             html_content = render_to_string('emails/admin_inquiry_notification.html', html_context)
 
@@ -338,7 +341,7 @@ Global Ark Resources Ltd."""
         if method == 'email':
             subject = f"\u26ea\ufe0f NEW PRIVATE SOURCING: {name} [{t_code}]"
 
-            base_url = f"{request.scheme}://{request.get_host()}"
+            logo_url = request.build_absolute_uri('/static/images/logo.jpg')
 
             html_context = {
                 'name': name,
@@ -349,7 +352,7 @@ Global Ark Resources Ltd."""
                 'timeline': timeline,
                 'details': details,
                 'tracking_code': t_code,
-                'base_url': base_url,
+                'logo_url': logo_url,
             }
             html_content = render_to_string('emails/admin_sourcing_notification.html', html_context)
 
